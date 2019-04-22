@@ -60,8 +60,6 @@ Filename: "{pf}\RH Utensils\Main\RH Utensils.exe"; Parameters: "-""{#ExtensionNa
 [Registry]
 Root: "HKCR"; Subkey: ".mp3";                                 ValueType: string; ValueData: "{#ExtensionName}";                             Flags: uninsdeletevalue;      Tasks: fileaccessory
 Root: "HKCR"; Subkey: ".wav";                                 ValueType: string; ValueData: "{#ExtensionName}";                             Flags: uninsdeletevalue;      Tasks: fileaccessory
-Root: "HKCR"; Subkey: ".mp4";                                 ValueType: string; ValueData: "{#ExtensionName}";                             Flags: uninsdeletevalue;      Tasks: fileaccessory
-Root: "HKCR"; Subkey: ".mov";                                 ValueType: string; ValueData: "{#ExtensionName}";                             Flags: uninsdeletevalue;      Tasks: fileaccessory
 Root: "HKCR"; Subkey: "{#ExtensionName}";                     ValueType: string; ValueData: "Program {#ExtensionName}";                     Flags: uninsdeletekey;        Tasks: fileaccessory
 Root: "HKCR"; Subkey: "{#ExtensionName}\DefaultIcon";         ValueType: string; ValueData: "{app}\{#ExtensionVersion}\Icons\file.ico";   Tasks: fileaccessory
 Root: "HKCR"; Subkey: "{#ExtensionName}\shell\open\command";  ValueType: string; ValueData: """{pf}\RH Utensils\Main\RH Utensils.exe"" -""{#ExtensionName}"" ""%1""";     Tasks: fileaccessory
