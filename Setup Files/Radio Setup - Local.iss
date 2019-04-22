@@ -4,7 +4,7 @@
 #define ExtensionPublisherURL   "https://rh-utensils.hampoelz.net/"
 #define ExtensionSupportURL     "https://github.com/rh-utensils/radio/issues/"
 #define ExtensionUpdatesURL     "https://github.com/rh-utensils/radio/releases/"
-#define ZipFileLink             "https://github.com/rh-utensils/radio/releases/download/" + ExtensionVersion + "/Radio.zip"
+#define ZipFileLink             "https://github.com/rh-utensils/radio/releases/download/v" + ExtensionVersion + "/Radio.zip"
 
 [Setup]
 AppId                    = {#ExtensionPublisher}_{#ExtensionName}_Local
