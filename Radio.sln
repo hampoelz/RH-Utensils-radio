@@ -1,0 +1,28 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio Version 16
+VisualStudioVersion = 16.0.28803.202
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Radio.Wpf", "Radio.Wpf\Radio.Wpf.csproj", "{839CEEA2-694C-4DCE-8FBF-B6816729B09B}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+		Test|Any CPU = Test|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{839CEEA2-694C-4DCE-8FBF-B6816729B09B}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{839CEEA2-694C-4DCE-8FBF-B6816729B09B}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{839CEEA2-694C-4DCE-8FBF-B6816729B09B}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{839CEEA2-694C-4DCE-8FBF-B6816729B09B}.Release|Any CPU.Build.0 = Release|Any CPU
+		{839CEEA2-694C-4DCE-8FBF-B6816729B09B}.Test|Any CPU.ActiveCfg = Test|Any CPU
+		{839CEEA2-694C-4DCE-8FBF-B6816729B09B}.Test|Any CPU.Build.0 = Test|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		SolutionGuid = {11295CD0-CDF5-430B-AC1B-683EA6098616}
+	EndGlobalSection
+EndGlobal

@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="utf-8"?>
+<versionHistory>
+  <v0.0.1>
+    <updateChannel>developer</updateChannel>
+    <version>0.0.1</version>
+    <setup>False</setup>
+    <file>https://github.com/rh-utensils/radio/releases/download/0.0.1/Radio.zip</file>
+  </v0.0.1>
+</versionHistory>
