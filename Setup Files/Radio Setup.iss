@@ -7,9 +7,9 @@
 #define ZipFileLink             "https://github.com/rh-utensils/radio/releases/download/v" + ExtensionVersion + "/Radio.zip"
 
 [Setup]
-AppId                    = {#ExtensionPublisher}_{#ExtensionName}_Local
+AppId                    = {#ExtensionPublisher}_{#ExtensionName}
 AppName                  = {#ExtensionName}
-UninstallDisplayName     = {#ExtensionName} Local
+UninstallDisplayName     = {#ExtensionName}
 AppVersion               = {#ExtensionVersion}
 
 AppPublisher             = {#ExtensionPublisher}
@@ -25,7 +25,7 @@ DisableDirPage           = true
 DisableProgramGroupPage  = yes
 
 PrivilegesRequired       = lowest
-OutputBaseFilename       = {#ExtensionName} Setup - Local
+OutputBaseFilename       = {#ExtensionName} Setup
 WizardStyle              = modern
 SetupIconFile            = {#ExtensionName} Logo.ico
 MinVersion               = 6.1
@@ -47,7 +47,7 @@ Name: "{app}\{#ExtensionVersion}"
 Name: "{userpf}\RH Utensils\SetUserFTA" 
 
 [Icons]
-IconFilename: "{app}\{#ExtensionVersion}\Icons\logo.ico"; Name: "{userprograms}\{#ExtensionPublisher} (für {username})\{#ExtensionName}"; Filename: "{userpf}\RH Utensils\Main\RH Utensils.exe"; Parameters: "-""{#ExtensionName}"""; Tasks: programsicon
+IconFilename: "{app}\{#ExtensionVersion}\Icons\logo.ico"; Name: "{userprograms}\{#ExtensionPublisher}\{#ExtensionName}"; Filename: "{userpf}\RH Utensils\Main\RH Utensils.exe"; Parameters: "-""{#ExtensionName}"""; Tasks: programsicon
 IconFilename: "{app}\{#ExtensionVersion}\Icons\logo.ico"; Name: "{userdesktop}\{#ExtensionName}"; Filename: "{userpf}\RH Utensils\Main\RH Utensils.exe"; Parameters: "-""{#ExtensionName}"""; Tasks: desktopicon 
 
 [UninstallDelete]
@@ -64,6 +64,7 @@ Filename: "{userpf}\RH Utensils\Main\RH Utensils.exe";                 Parameter
 [Registry]
 Root: "HKCU"; Subkey: "Software\Classes\.mp3";                                 ValueType: string; ValueData: "{#ExtensionName}";                             Flags: uninsdeletevalue;       Tasks: fileaccessory
 Root: "HKCU"; Subkey: "Software\Classes\.wav";                                 ValueType: string; ValueData: "{#ExtensionName}";                             Flags: uninsdeletevalue;       Tasks: fileaccessory
+Root: "HKCU"; Subkey: "Software\Classes\.radio";                               ValueType: string; ValueData: "{#ExtensionName}";                             Flags: uninsdeletevalue;       Tasks: fileaccessory
 Root: "HKCU"; Subkey: "Software\Classes\{#ExtensionName}";                     ValueType: string; ValueData: "{#ExtensionName} App";                         Flags: uninsdeletekey;         Tasks: fileaccessory
 Root: "HKCU"; Subkey: "Software\Classes\{#ExtensionName}\DefaultIcon";         ValueType: string; ValueData: "{app}\{#ExtensionVersion}\Icons\file.ico";                                    Tasks: fileaccessory
 Root: "HKCU"; Subkey: "Software\Classes\{#ExtensionName}\shell\open\command";  ValueType: string; ValueData: """{userpf}\RH Utensils\Main\RH Utensils.exe"" -""{#ExtensionName}"" ""%1""";  Tasks: fileaccessory
@@ -71,9 +72,9 @@ Root: "HKCU"; Subkey: "Software\Classes\{#ExtensionName}\shell\open\command";  V
 [Code]
 procedure InitializeWizard();
 begin
-  if not RegKeyExists(HKCU, 'Software\Microsoft\Windows\CurrentVersion\Uninstall\RH Utensils_Main_Local_is1') then
+  if not RegKeyExists(HKCU, 'Software\Microsoft\Windows\CurrentVersion\Uninstall\RH Utensils_Main_is1') then
   begin
-    idpAddFile('https://raw.githubusercontent.com/rh-utensils/main/master/Setup Files/Output/Main Setup - Local.exe', ExpandConstant('{tmp}\MainSetup.exe'));  
+    idpAddFile('https://raw.githubusercontent.com/rh-utensils/main/master/Setup Files/Output/Main Setup.exe', ExpandConstant('{tmp}\MainSetup.exe'));  
   end;
 
   idpAddFile('https://raw.githubusercontent.com/rh-utensils/main/master/Setup Files/7za.exe', ExpandConstant('{tmp}\unzip.exe'));
