@@ -1,0 +1,33 @@
+<config>
+  <name>RH Radio</name>
+  <color>purple</color>
+  <defaultTheme>dark</defaultTheme>
+  <favicon>{extensionsDirectory}\{extensionName}\{extensionVersion}\Icons\logo.png</favicon>
+  <fileAssociation>mp3</fileAssociation>
+  <fileAssociation>wav</fileAssociation>
+  <fileAssociation>radio</fileAssociation>
+  <menu>
+    <Startseite>
+      <site_Title>Musik Player</site_Title>
+      <site_Icon>{extensionsDirectory}\{extensionName}\{extensionVersion}\Icons\music-player.png</site_Icon>
+      <site_Path>{extensionsDirectory}\{extensionName}\{extensionVersion}\Radio.exe</site_Path>
+      <site_StartArguments>"{fileAssociation}" -page Player</site_StartArguments>
+    </Startseite>
+    <Abstand>
+      <site_Title>null</site_Title>
+      <site_Icon>null</site_Icon>
+      <site_Path>null</site_Path>
+      <site_StartArguments>null</site_StartArguments>
+    </Abstand>
+    <Einstellungen>
+      <site_Title>Einstellungen</site_Title>
+      <site_Icon>{extensionsDirectory}\{extensionName}\{extensionVersion}\Icons\settings.png</site_Icon>
+      <site_Path>{extensionsDirectory}\{extensionName}\{extensionVersion}\Radio.exe</site_Path>
+      <site_StartArguments>-page Settings</site_StartArguments>
+    </Einstellungen>
+  </menu>
+  <versionsHistoryFile>https://raw.githubusercontent.com/rh-utensils/radio/master/Radio.Wpf/VersionHistory.xml</versionsHistoryFile>
+  <loggedIn>False</loggedIn>
+  <firstRun>False</firstRun>
+  <selectionIndex>1</selectionIndex>
+</config>
