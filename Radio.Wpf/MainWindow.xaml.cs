@@ -1,10 +1,6 @@
-﻿using Radio.Wpf.Functions;
-using MaterialDesignColors;
-using MaterialDesignThemes.Wpf;
-using System;
-using System.IO;
-using System.Linq;
+﻿using System;
 using System.Windows;
+using Radio.Wpf.Utilities;
 
 namespace Radio.Wpf
 {
@@ -15,9 +11,9 @@ namespace Radio.Wpf
             InitializeComponent();
         }
 
-        private async void MetroWindow_Loaded(object sender, RoutedEventArgs e)
+        private void MetroWindow_Loaded(object sender, RoutedEventArgs e)
         {
-            Config.File = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "config.xml");
+            MessageHelper.ReceiveDataMessages();
 
             string[] args = Environment.GetCommandLineArgs();
 
@@ -26,24 +22,12 @@ namespace Radio.Wpf
                 switch (args[arg])
                 {
                     case "-page":
-                        Functions.Index.Set(args[arg + 1]);
+                        Index.Navigate(new Uri("Pages/" + args[arg + 1] + ".xaml", UriKind.Relative));
                         continue;
 
                         //other cases
                 }
-
-                if (File.Exists(args[arg]))
-                {
-                    App.File = args[arg];
-                    continue;
-                }
             }
-
-            var configColor = await Config.ReadString("color").ConfigureAwait(false);
-
-            var Color = new SwatchesProvider().Swatches.FirstOrDefault(a => a.Name == configColor.ToLower());
-            new PaletteHelper().ReplacePrimaryColor(Color);
-            new PaletteHelper().ReplaceAccentColor(Color);
         }
     }
 }
