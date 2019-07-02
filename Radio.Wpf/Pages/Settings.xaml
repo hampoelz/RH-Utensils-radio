@@ -41,11 +41,11 @@
                                 <TextBlock Text="Konto Einstellungen" VerticalAlignment="Top" Height="25" Width="800" Margin="10,10,0,0" FontSize="20" />
                                 <materialDesign:Card Width="800" Margin="0,45,0,30">
                                     <ItemsControl>
-                                        <Grid Margin="20">
+                                        <Grid Margin="20" IsEnabled="False">
                                             <materialDesign:PackIcon Kind="Sync" Width="30" Height="Auto" VerticalAlignment="Center" HorizontalAlignment="Left" Margin="15,0,0,0" />
-                                            <TextBlock FontSize="20" Text="Test Einstellung"  HorizontalAlignment="Left" VerticalAlignment="Top" Margin="60,0,0,0" />
-                                            <TextBlock FontSize="13" Text="Teste, die Syncronisierung"  HorizontalAlignment="Left" VerticalAlignment="Bottom" Margin="60,27,0,0" />
-                                            <ToggleButton x:Name="Test"  HorizontalAlignment="Right" VerticalAlignment="Center" Margin="0,0,20,0" Checked="Test_Checked" Unchecked="Test_Unchecked" />
+                                            <TextBlock FontSize="20" Text="Coming Soon"  HorizontalAlignment="Left" VerticalAlignment="Top" Margin="60,0,0,0" />
+                                            <TextBlock FontSize="13" Text=" - - - - -"  HorizontalAlignment="Left" VerticalAlignment="Bottom" Margin="60,27,0,0" />
+                                            <Grid x:Name="TestControl"  HorizontalAlignment="Right" VerticalAlignment="Center" Margin="0,0,20,0" />
                                         </Grid>
                                         <Separator />
                                         <Grid Margin="15,15,20,15">
@@ -72,7 +72,7 @@
                                         <Grid Margin="15,15,20,15">
                                             <TextBlock FontSize="20" Text="Theme" HorizontalAlignment="Left" VerticalAlignment="Center" Margin="10,0,0,0" />
                                             <TextBlock FontSize="20" Text="Hell" HorizontalAlignment="Right" VerticalAlignment="Center" Margin="0,0,20,0" />
-                                            <ToggleButton x:Name="Theme" HorizontalAlignment="Right" VerticalAlignment="Center" Margin="0,0,70,0" Checked="Theme_Checked" Unchecked="Theme_Unchecked" />
+                                            <Grid x:Name="ThemeControl" HorizontalAlignment="Right" VerticalAlignment="Center" Margin="0,0,70,0" />
                                             <TextBlock FontSize="20" Text="Dunkel" HorizontalAlignment="Right" VerticalAlignment="Center" Margin="0,0,125,0" />
                                         </Grid>
                                     </ItemsControl>
@@ -87,7 +87,7 @@
                             </materialDesign:TransitioningContent.OpeningEffects>
                             <Grid>
                                 <TextBlock Text="Andere Sachen" VerticalAlignment="Top" Height="25" Width="800" Margin="10,10,0,0" FontSize="20" />
-                                <materialDesign:Card Width="800" Height="1000" Margin="0,45,0,30">
+                                <materialDesign:Card Width="800" Height="300" Margin="0,45,0,30">
                                     <ItemsControl>
                                         <Grid Margin="15,15,20,15">
                                             <TextBlock FontSize="20" Text="Hier kommen weitere Einstellungs-Optionen ..." HorizontalAlignment="Center" VerticalAlignment="Center" Margin="10,0,0,0" />
