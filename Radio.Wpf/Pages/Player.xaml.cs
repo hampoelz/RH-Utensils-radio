@@ -85,10 +85,10 @@ namespace Radio.Wpf.Pages
 
             playMusik = true;
 
-            var settings = new JsonSerializerSettings();
-            settings.Converters.Add(new TupleConverter());
+            //var settings = new JsonSerializerSettings();
+            //settings.Converters.Add(new TupleConverter());
 
-            var result = JsonConvert.DeserializeObject(Utilities.Settings.Pinned, PinItem, settings);
+            //var result = JsonConvert.DeserializeObject(Utilities.Settings.Pinned, PinItem, settings);
 
 
             List<PinItem> items = new List<PinItem>();
