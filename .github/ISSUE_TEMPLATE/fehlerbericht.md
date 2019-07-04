@@ -35,8 +35,8 @@ Füge ggf. die Konfigurationsdatei hinzu, falls etwas falsch Konfiguriert wurde.
 
 **Smartphone (bitte ergänze die folgenden Angaben):**
  - Gerät: [z.B. iPhone 6]
- - OS: [z.B. iOS 8.1]
- - Version [z.B. 22]
+ - OS: [z.B. iOS]
+ - Version [z.B. 8.1]
 
 **Zusätzlicher Kontext**
 Füge hier einen anderen Kontext zum Problem hinzu.
