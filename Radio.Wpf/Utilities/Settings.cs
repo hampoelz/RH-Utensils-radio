@@ -1,14 +1,10 @@
 ﻿using MahApps.Metro;
 using MaterialDesignThemes.Wpf;
 using Newtonsoft.Json;
-using Newtonsoft.Json.Linq;
 using Radio.Wpf.Pages;
-using Radio.Wpf.Utilities;
 using System;
 using System.Collections.Generic;
-using System.IO;
 using System.Windows;
-using System.Windows.Threading;
 
 namespace Radio.Wpf.Utilities
 {
@@ -79,16 +75,26 @@ namespace Radio.Wpf.Utilities
             }
         }
 
-        private static List<PinItem> pinned;
+        private static string pinned;
 
-        public static List<PinItem> Pinned
+        public static string Pinned
         {
             get => pinned;
             set
             {
-                if (pinned == value) return;
+                if (value == pinned || string.IsNullOrEmpty(value)) return;
 
                 pinned = value;
+
+                var json = value.Replace("'", "\"");
+
+                var settings = new JsonSerializerSettings();
+                settings.Converters.Add(new TupleConverter());
+
+                var list = (List<PinItem>)JsonConvert.DeserializeObject(json, new List<PinItem>().GetType(), settings);
+
+                Player.Pins.ItemsSource = null;
+                Player.Pins.ItemsSource = list;
             }
         }
     }
