@@ -7,16 +7,19 @@ using Radio.Wpf.Utilities;
 using Sample_NAudio;
 using System;
 using System.Collections.Generic;
+using System.Collections.Specialized;
 using System.ComponentModel;
 using System.Diagnostics;
 using System.IO;
 using System.Linq;
+using System.Runtime.InteropServices;
 using System.Text.RegularExpressions;
 using System.Threading;
 using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Input;
+using System.Windows.Interop;
 using System.Windows.Media;
 using System.Windows.Media.Imaging;
 
@@ -26,11 +29,14 @@ namespace Radio.Wpf.Pages
     {
         public string Title { get; set; }
         public string Path { get; set; }
+        public Visibility Visibility { get; set; }
     }
 
     public partial class Player : Page
     {
         public static bool playMusik;
+
+        public static ListBox Pins;
 
         public static TextBlock FileName = new TextBlock();
 
@@ -58,6 +64,12 @@ namespace Radio.Wpf.Pages
             spectrumAnalyzer1.RegisterSoundPlayer(soundEngine);
             spectrumAnalyzer2.RegisterSoundPlayer(soundEngine);
 
+            Pins = PinsTemplate;
+            Pins.Visibility = Visibility;
+            Pins.ItemsSource = new List<PinItem>();
+
+            ((INotifyCollectionChanged)Pins.Items).CollectionChanged += PinsCollectionChanged;
+
             FileName.Foreground = Brushes.White;
             FileName.TextAlignment = TextAlignment.Center;
             FileName.VerticalAlignment = VerticalAlignment.Center;
@@ -84,15 +96,6 @@ namespace Radio.Wpf.Pages
             SkipNextButton.IsEnabled = false;
 
             playMusik = true;
-
-            //var settings = new JsonSerializerSettings();
-            //settings.Converters.Add(new TupleConverter());
-
-            //var result = JsonConvert.DeserializeObject(Utilities.Settings.Pinned, PinItem, settings);
-
-
-            List<PinItem> items = new List<PinItem>();
-            Pins.ItemsSource = items;
         }
 
         private void CreateToolbarButton(Button btn, PackIcon pIcon, PackIconKind pIcoKind)
@@ -377,7 +380,7 @@ namespace Radio.Wpf.Pages
             TextBlock title = (TextBlock)chip.Content;
             Image icon = (Image)chip.Icon;
 
-            setCover(icon, title);
+            SetCover(icon, title);
         }
 
         private void Chip_Click(object sender, RoutedEventArgs e)
@@ -401,10 +404,10 @@ namespace Radio.Wpf.Pages
             TextBlock title = (TextBlock)chip.Content;
             Image icon = (Image)chip.Icon;
 
-            setCover(icon, title);
+            SetCover(icon, title);
         }
 
-        private void setCover(Image icon, TextBlock title)
+        private void SetCover(Image icon, TextBlock title)
         {
             foreach (PinItem item in (List<PinItem>)Pins.ItemsSource)
             {
@@ -436,7 +439,6 @@ namespace Radio.Wpf.Pages
                                 icon.Stretch = Stretch.Uniform;
 
                                 return;
-
                             }
                             catch (NotSupportedException)
                             {
@@ -474,17 +476,14 @@ namespace Radio.Wpf.Pages
                     }
                 }
 
-                Pins.ItemsSource = null;
-                Pins.ItemsSource = items;
+                var settings = new JsonSerializerSettings();
+                settings.Converters.Add(new TupleConverter());
 
-                if (items.Count <= 0)
-                {
-                    NoPins.Visibility = Visibility.Visible;
-                }
+                SettingsHelper.ChangeValue("pinned", JsonConvert.SerializeObject(items, settings).Replace("\"","'"));
             }
         }
 
-        private bool _toPinItem = true;
+        public static bool _toPinItem = true;
 
         private void Pin_Checked(object sender, RoutedEventArgs e)
         {
@@ -503,14 +502,16 @@ namespace Radio.Wpf.Pages
 
             if (!_toPinItem) return;
 
-            List<PinItem> items = (List<PinItem>)Pins.ItemsSource;
+            var items = (List<PinItem>)Pins.ItemsSource;
 
             items.Add(new PinItem() { Title = FileName.Text, Path = App.File });
 
-            Pins.ItemsSource = null;
-            Pins.ItemsSource = items;
+            var settings = new JsonSerializerSettings();
+            settings.Converters.Add(new TupleConverter());
 
-            NoPins.Visibility = Visibility.Hidden;
+            var json = JsonConvert.SerializeObject(items, settings).Replace("\"", "'");
+
+            SettingsHelper.ChangeValue("pinned", json);
         }
 
         private void Pin_Unchecked(object sender, RoutedEventArgs e)
@@ -519,7 +520,7 @@ namespace Radio.Wpf.Pages
 
             if (!_toPinItem) return;
 
-            List<PinItem> items = (List<PinItem>)Pins.ItemsSource;
+            var items = (List<PinItem>)Pins.ItemsSource;
 
             for (int i = items.Count - 1; i >= 0; i--)
             {
@@ -529,13 +530,62 @@ namespace Radio.Wpf.Pages
                 }
             }
 
-            Pins.ItemsSource = null;
-            Pins.ItemsSource = items;
+            var settings = new JsonSerializerSettings();
+            settings.Converters.Add(new TupleConverter());
+
+            SettingsHelper.ChangeValue("pinned", JsonConvert.SerializeObject(items, settings).Replace("\"", "'"));
+        }
+
+        public void PinsCollectionChanged(Object sender, NotifyCollectionChangedEventArgs e)
+        {
+            var items = (List<PinItem>)Pins.ItemsSource;
+
+            if (items == null) return;
 
             if (items.Count <= 0)
             {
                 NoPins.Visibility = Visibility.Visible;
             }
+            else
+            {
+                NoPins.Visibility = Visibility.Hidden;
+            }
+
+            _toPinItem = false;
+
+            Pin.IsChecked = false;
+
+            foreach (PinItem item in (List<PinItem>)Pins.ItemsSource)
+            {
+                if (!File.Exists(item.Path))
+                {
+                    item.Visibility = Visibility.Collapsed;
+                }
+
+                if (item.Path == App.File)
+                {
+                    Pin.IsChecked = true;
+                }
+            }
+            _toPinItem = true;
+        }
+
+        private void Page_KeyDown(object sender, KeyEventArgs e)
+        {
+            if (e.Key == Key.Space)
+            {
+                PausePlay_Click(sender, e);
+            }
+            else if (e.Key == Key.Right)
+            {
+                AudioPlayer.Instance.ChannelPosition += 10;
+            }
+            else if (e.Key == Key.Left)
+            {
+                AudioPlayer.Instance.ChannelPosition -= 10;
+            }
+
+            e.Handled = true;
         }
     }
 }
