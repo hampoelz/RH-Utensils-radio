@@ -65,7 +65,7 @@ Filename: "{userpf}\RH Utensils\Main\RH Utensils.exe";                 Parameter
 Root: "HKCU"; Subkey: "Software\Classes\.mp3";                                 ValueType: string; ValueData: "{#ExtensionName}";                             Flags: uninsdeletevalue;       Tasks: fileaccessory
 Root: "HKCU"; Subkey: "Software\Classes\.wav";                                 ValueType: string; ValueData: "{#ExtensionName}";                             Flags: uninsdeletevalue;       Tasks: fileaccessory
 Root: "HKCU"; Subkey: "Software\Classes\.radio";                               ValueType: string; ValueData: "{#ExtensionName}";                             Flags: uninsdeletevalue;       Tasks: fileaccessory
-Root: "HKCU"; Subkey: "Software\Classes\{#ExtensionName}";                     ValueType: string; ValueData: "{#ExtensionName} App";                         Flags: uninsdeletekey;         Tasks: fileaccessory
+Root: "HKCU"; Subkey: "Software\Classes\{#ExtensionName}";                     ValueType: string; ValueData: "Musik-Datei";                                  Flags: uninsdeletekey;         Tasks: fileaccessory
 Root: "HKCU"; Subkey: "Software\Classes\{#ExtensionName}\DefaultIcon";         ValueType: string; ValueData: "{app}\{#ExtensionVersion}\Icons\file.ico";                                    Tasks: fileaccessory
 Root: "HKCU"; Subkey: "Software\Classes\{#ExtensionName}\shell\open\command";  ValueType: string; ValueData: """{userpf}\RH Utensils\Main\RH Utensils.exe"" -""{#ExtensionName}"" ""%1""";  Tasks: fileaccessory
 
