@@ -13,8 +13,8 @@
                     xmlns:svl="clr-namespace:WPFSoundVisualizationLib;assembly=WPFSoundVisualizationLib">
 
     <SolidColorBrush x:Key="ControlBackgroundBrush"
-                     Opacity="0"/>
-    
+                     Opacity="0" />
+
     <!-- Region: SpectrumAnalyzer -->
     <LinearGradientBrush x:Key="SpectrumBarBrush"
                          EndPoint="0.5,0"
@@ -140,9 +140,4 @@
         </Setter>
     </Style>
     <!-- EndRegion: WaveformTimeline -->
-
 </ResourceDictionary>
-
-
-
-

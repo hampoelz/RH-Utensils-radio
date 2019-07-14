@@ -10,6 +10,7 @@ namespace Radio.Wpf.Functions
     public static class Config
     {
         private static string name = "";
+
         public static string Name
         {
             get => name;
@@ -24,6 +25,7 @@ namespace Radio.Wpf.Functions
         }
 
         private static string color = "";
+
         public static string Color
         {
             get => color;

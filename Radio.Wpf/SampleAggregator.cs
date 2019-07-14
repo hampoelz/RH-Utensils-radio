@@ -3,8 +3,8 @@
 // Please see http://go.microsoft.com/fwlink/?LinkID=131993 for details.
 // All other rights reserved.
 
-using System;
 using NAudio.Dsp;
+using System;
 
 namespace Sample_NAudio
 {
@@ -34,13 +34,13 @@ namespace Sample_NAudio
             volumeRightMinValue = float.MaxValue;
             channelDataPosition = 0;
         }
-             
+
         /// <summary>
         /// Add a sample value to the aggregator.
         /// </summary>
         /// <param name="value">The value of the sample.</param>
         public void Add(float leftValue, float rightValue)
-        {            
+        {
             if (channelDataPosition == 0)
             {
                 volumeLeftMaxValue = float.MinValue;
@@ -52,7 +52,7 @@ namespace Sample_NAudio
             // Make stored channel data stereo by averaging left and right values.
             channelData[channelDataPosition].X = (leftValue + rightValue) / 2.0f;
             channelData[channelDataPosition].Y = 0;
-            channelDataPosition++;            
+            channelDataPosition++;
 
             volumeLeftMaxValue = Math.Max(volumeLeftMaxValue, leftValue);
             volumeLeftMinValue = Math.Min(volumeLeftMinValue, leftValue);
@@ -99,6 +99,6 @@ namespace Sample_NAudio
         public float RightMinVolume
         {
             get { return volumeRightMinValue; }
-        }        
+        }
     }
 }

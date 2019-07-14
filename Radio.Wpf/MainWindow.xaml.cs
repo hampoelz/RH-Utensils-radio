@@ -1,6 +1,6 @@
-﻿using System;
+﻿using Radio.Wpf.Utilities;
+using System;
 using System.Windows;
-using Radio.Wpf.Utilities;
 
 namespace Radio.Wpf
 {

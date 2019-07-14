@@ -1,11 +1,9 @@
 ﻿using NAudio.Wave;
-using WPFSoundVisualizationLib;
+using Sample_NAudio;
 using System;
 using System.ComponentModel;
-using Sample_NAudio;
 using System.Windows.Threading;
-using System.Collections.Generic;
-using System.Windows;
+using WPFSoundVisualizationLib;
 
 namespace Radio.Wpf.Utilities
 {
@@ -36,6 +34,7 @@ namespace Radio.Wpf.Utilities
         //public static List<string> PlaylistFiles;
 
         #region Instance
+
         public static AudioPlayer Instance
         {
             get
@@ -56,9 +55,11 @@ namespace Radio.Wpf.Utilities
             ChannelPosition = ((double)ActiveStream.Position / (double)ActiveStream.Length) * ActiveStream.TotalTime.TotalSeconds;
             inChannelTimerUpdate = false;
         }
-        #endregion
+
+        #endregion Instance
 
         #region IDisposable
+
         public void Dispose()
         {
             Dispose(true);
@@ -77,9 +78,11 @@ namespace Radio.Wpf.Utilities
                 disposed = true;
             }
         }
-        #endregion
+
+        #endregion IDisposable
 
         #region ISpectrumPlayer
+
         public bool GetFFTData(float[] fftDataBuffer)
         {
             sampleAggregator.GetFFTResults(fftDataBuffer);
@@ -95,16 +98,19 @@ namespace Radio.Wpf.Utilities
                 maxFrequency = 22050; // Assume a default 44.1 kHz sample rate.
             return (int)((frequency / maxFrequency) * (fftDataSize / 2));
         }
-        #endregion
+
+        #endregion ISpectrumPlayer
 
         #region INotifyPropertyChanged
+
         public event PropertyChangedEventHandler PropertyChanged;
 
-        private void NotifyPropertyChanged(String info)
+        public void NotifyPropertyChanged(String info)
         {
             PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(info));
         }
-        #endregion
+
+        #endregion INotifyPropertyChanged
 
         public TagLib.File FileTag
         {
