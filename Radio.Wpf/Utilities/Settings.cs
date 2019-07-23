@@ -91,10 +91,16 @@ namespace Radio.Wpf.Utilities
                 var settings = new JsonSerializerSettings();
                 settings.Converters.Add(new TupleConverter());
 
-                var list = (List<PinItem>)JsonConvert.DeserializeObject(json, new List<PinItem>().GetType(), settings);
+                var items = (List<PinItem>)JsonConvert.DeserializeObject(json, new List<PinItem>().GetType(), settings);
+
+                foreach (PinItem item in items)
+                {
+                    item.Title = item.Title.Replace("&apos;", "'");
+                    item.Path = item.Path.Replace("&apos;", "'");
+                }
 
                 Player.Pins.ItemsSource = null;
-                Player.Pins.ItemsSource = list;
+                Player.Pins.ItemsSource = items;
             }
         }
     }
