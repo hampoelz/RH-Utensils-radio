@@ -1,10 +1,6 @@
-﻿using MaterialDesignColors;
-using MaterialDesignThemes.Wpf;
-using NAudio.Wave;
+﻿using MaterialDesignThemes.Wpf;
 using Newtonsoft.Json;
-using Radio.Wpf.Functions;
 using Radio.Wpf.Utilities;
-using Sample_NAudio;
 using System;
 using System.Collections.Generic;
 using System.Collections.Specialized;
@@ -12,14 +8,9 @@ using System.ComponentModel;
 using System.Diagnostics;
 using System.IO;
 using System.Linq;
-using System.Runtime.InteropServices;
-using System.Text.RegularExpressions;
-using System.Threading;
-using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Input;
-using System.Windows.Interop;
 using System.Windows.Media;
 using System.Windows.Media.Imaging;
 
@@ -127,6 +118,7 @@ namespace Radio.Wpf.Pages
         }
 
         #region NAudio Engine Events
+
         private void NAudioEngine_PropertyChanged(object sender, PropertyChangedEventArgs e)
         {
             AudioPlayer engine = AudioPlayer.Instance;
@@ -170,21 +162,22 @@ namespace Radio.Wpf.Pages
                                 }
                                 catch (NotSupportedException)
                                 {
-                                    Cover.Source = new BitmapImage(new Uri("/Radio;component/Assets/cover.png", UriKind.Relative));
+                                    Cover.Source = new BitmapImage(new Uri("/Radio;component/Assets/music-note.png", UriKind.Relative));
                                 }
                                 albumArtworkMemStream.Close();
                             }
                         }
                         else
                         {
-                            Cover.Source = new BitmapImage(new Uri("/Radio;component/Assets/cover.png", UriKind.Relative));
+                            Cover.Source = new BitmapImage(new Uri("/Radio;component/Assets/music-note.png", UriKind.Relative));
                         }
                     }
                     else
                     {
-                        Cover.Source = new BitmapImage(new Uri("/Radio;component/Assets/cover.png", UriKind.Relative));
+                        Cover.Source = new BitmapImage(new Uri("/Radio;component/Assets/music-note.png", UriKind.Relative));
                     }
                     break;
+
                 case "ChannelPosition":
                     if (double.IsNaN(engine.ChannelPosition)) return;
 
@@ -207,6 +200,7 @@ namespace Radio.Wpf.Pages
                     }
 
                     break;
+
                 case "ChannelLength":
 
                     if (App.Title != null) FileName.Text = App.Title;
@@ -233,12 +227,14 @@ namespace Radio.Wpf.Pages
                     Seekbar.Maximum = (int)TimeSpan.FromSeconds(Math.Floor(maxPosition.TotalMilliseconds)).TotalSeconds;
 
                     break;
+
                 default:
                     // Do Nothing
                     break;
             }
         }
-        #endregion
+
+        #endregion NAudio Engine Events
 
         private void OpenFile()
         {
@@ -331,7 +327,7 @@ namespace Radio.Wpf.Pages
             Bitrate.Text = "";
             Copyright.Text = "";
 
-            Cover.Source = new BitmapImage(new Uri("/Radio;component/Assets/cover.png", UriKind.Relative));
+            Cover.Source = new BitmapImage(new Uri("/Radio;component/Assets/music-note.png", UriKind.Relative));
 
             _toPinItem = false;
             Pin.IsChecked = false;
@@ -350,7 +346,7 @@ namespace Radio.Wpf.Pages
 
         private void Repeat_Unchecked(object sender, RoutedEventArgs e)
         {
-           RepeatIcon.Foreground = Brushes.White;
+            RepeatIcon.Foreground = Brushes.White;
         }
 
         private void Button_Click(object sender, RoutedEventArgs e)
@@ -443,7 +439,7 @@ namespace Radio.Wpf.Pages
                             catch (NotSupportedException)
                             {
                                 icon.Stretch = Stretch.None;
-                                icon.Source = new BitmapImage(new Uri("/Radio;component/Assets/cover.png", UriKind.Relative));
+                                icon.Source = new BitmapImage(new Uri("/Radio;component/Assets/music-note.png", UriKind.Relative));
                             }
                             albumArtworkMemStream.Close();
                         }
@@ -452,7 +448,7 @@ namespace Radio.Wpf.Pages
             }
 
             icon.Stretch = Stretch.None;
-            icon.Source = new BitmapImage(new Uri("/Radio;component/Assets/cover.png", UriKind.Relative));
+            icon.Source = new BitmapImage(new Uri("/Radio;component/Assets/music-note.png", UriKind.Relative));
         }
 
         private void Chip_DeleteClick(object sender, RoutedEventArgs e)
@@ -479,7 +475,13 @@ namespace Radio.Wpf.Pages
                 var settings = new JsonSerializerSettings();
                 settings.Converters.Add(new TupleConverter());
 
-                SettingsHelper.ChangeValue("pinned", JsonConvert.SerializeObject(items, settings).Replace("\"","'"));
+                foreach (PinItem item in items)
+                {
+                    item.Title = item.Title.Replace("'", "&apos;");
+                    item.Path = item.Path.Replace("'", "&apos;");
+                }
+
+                SettingsHelper.ChangeValue("pinned", JsonConvert.SerializeObject(items, settings).Replace("\"", "'"));
             }
         }
 
@@ -509,6 +511,12 @@ namespace Radio.Wpf.Pages
             var settings = new JsonSerializerSettings();
             settings.Converters.Add(new TupleConverter());
 
+            foreach (PinItem item in items)
+            {
+                item.Title = item.Title.Replace("'", "&apos;");
+                item.Path = item.Path.Replace("'", "&apos;");
+            }
+
             var json = JsonConvert.SerializeObject(items, settings).Replace("\"", "'");
 
             SettingsHelper.ChangeValue("pinned", json);
@@ -532,6 +540,12 @@ namespace Radio.Wpf.Pages
 
             var settings = new JsonSerializerSettings();
             settings.Converters.Add(new TupleConverter());
+
+            foreach (PinItem item in items)
+            {
+                item.Title = item.Title.Replace("'", "&apos;");
+                item.Path = item.Path.Replace("'", "&apos;");
+            }
 
             SettingsHelper.ChangeValue("pinned", JsonConvert.SerializeObject(items, settings).Replace("\"", "'"));
         }
