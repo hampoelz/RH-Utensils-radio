@@ -204,13 +204,13 @@
     <Resource Include="Assets\Logo.ico" />
   </ItemGroup>
   <ItemGroup>
-    <Resource Include="Assets\Cover.png" />
-  </ItemGroup>
-  <ItemGroup>
     <Resource Include="config.xml" />
   </ItemGroup>
   <ItemGroup>
     <Resource Include="Assets\play.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <Resource Include="Assets\music-note.png" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
 </Project>

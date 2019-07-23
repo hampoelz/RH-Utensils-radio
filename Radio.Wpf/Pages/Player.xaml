@@ -92,7 +92,7 @@
                             <ColumnDefinition Width="*" />
                         </Grid.ColumnDefinitions>
                         <materialDesign:Card Grid.Column="0" Margin="20" Background="{DynamicResource PrimaryHueMidBrush}">
-                            <Image x:Name="Cover" Source="/Radio;component/Assets/cover.png" Stretch="Uniform" />
+                            <Image x:Name="Cover" Source="/Radio;component/Assets/music-note.png" Stretch="Uniform" />
                         </materialDesign:Card>
                         <Grid Grid.Column="1" Margin="20">
                             <Grid.ColumnDefinitions>
@@ -152,9 +152,9 @@
                             </ListBox.ItemContainerStyle>
                             <ListBox.ItemTemplate>
                                 <DataTemplate>
-                                    <materialDesign:Chip Margin="5" IsDeletable="True" DeleteToolTip="Abheften" MouseEnter="Chip_MouseEnter" MouseLeave="Chip_MouseLeave" Click="Chip_Click" Loaded="Chip_Loaded" DeleteClick="Chip_DeleteClick" Visibility="{Binding visibility}">
+                                    <materialDesign:Chip Margin="5" IsDeletable="True" DeleteToolTip="Abheften" MouseEnter="Chip_MouseEnter" MouseLeave="Chip_MouseLeave" Click="Chip_Click" Loaded="Chip_Loaded" DeleteClick="Chip_DeleteClick" Visibility="{Binding Visibility}">
                                         <materialDesign:Chip.Icon>
-                                            <Image Source="/Radio;component/Assets/cover.png" Stretch="None" HorizontalAlignment="Center" VerticalAlignment="Center" />
+                                            <Image Source="/Radio;component/Assets/music-note.png" Stretch="None" HorizontalAlignment="Center" VerticalAlignment="Center" />
                                         </materialDesign:Chip.Icon>
                                         <TextBlock Text="{Binding Title}" TextTrimming="CharacterEllipsis" />
                                     </materialDesign:Chip>
