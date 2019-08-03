@@ -1,6 +1,7 @@
 ﻿using Radio.Wpf.Utilities;
 using System;
 using System.Windows;
+using System.Windows.Input;
 
 namespace Radio.Wpf
 {
@@ -28,6 +29,13 @@ namespace Radio.Wpf
                         //other cases
                 }
             }
+        }
+
+        private void MetroWindow_KeyDown(object sender, KeyEventArgs e)
+        {
+            Utilities.KeyDownEvent.Handle(e.Key);
+
+            e.Handled = true;
         }
     }
 }

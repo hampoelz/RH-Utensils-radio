@@ -6,6 +6,7 @@ using System.Runtime.InteropServices;
 using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 using System.Windows;
+using System.Windows.Input;
 using System.Windows.Interop;
 
 namespace Radio.Wpf.Utilities
@@ -96,6 +97,16 @@ namespace Radio.Wpf.Utilities
                     if (!Pages.Player.playMusik) return;
 
                     App.File = ExtractQuote(msg);
+                }
+                else if (msg.StartsWith("key"))
+                {
+                    if (!(Application.Current.MainWindow is MainWindow mw)) return;
+
+                    var keyData = int.Parse(ExtractQuote(msg));
+
+                    var key = KeyInterop.KeyFromVirtualKey(keyData);
+
+                    KeyDownEvent.Handle(key);
                 }
             }
             catch (Exception ex)

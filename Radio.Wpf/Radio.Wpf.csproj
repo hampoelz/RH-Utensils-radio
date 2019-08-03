@@ -121,6 +121,7 @@
     <Compile Include="Utilities\AudioPlayer.cs" />
     <Compile Include="Utilities\Converter.cs" />
     <Compile Include="Utilities\InstanceHelper.cs" />
+    <Compile Include="Utilities\KeyDownEvent.cs" />
     <Compile Include="Utilities\LogHelper.cs" />
     <Compile Include="Utilities\MessageHelper.cs" />
     <Compile Include="Utilities\SettingsHelper.cs" />

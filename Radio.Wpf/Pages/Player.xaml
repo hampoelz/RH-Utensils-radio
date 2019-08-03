@@ -15,7 +15,7 @@
       FontFamily="{DynamicResource MaterialDesignFont}"
 
       d:DesignHeight="670" d:DesignWidth="950"
-      Title="Home" Drop="Page_Drop" AllowDrop="True" PreviewKeyDown="Page_KeyDown">
+      Title="Home" Drop="Page_Drop" AllowDrop="True">
 
     <Grid>
         <materialDesign:Card Margin="50" Background="{DynamicResource MaterialDesignPaper}">

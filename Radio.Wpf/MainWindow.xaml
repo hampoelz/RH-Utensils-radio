@@ -22,7 +22,7 @@
                    ShowMinButton="False"
                    ResizeMode="NoResize"
 
-                   Title="RH Radio" Height="670" Width="950" WindowStartupLocation="CenterScreen" Loaded="MetroWindow_Loaded">
+                   Title="RH Radio" Height="670" Width="950" WindowStartupLocation="CenterScreen" Loaded="MetroWindow_Loaded" PreviewKeyDown="MetroWindow_KeyDown">
     <Grid x:Name="Grid">
         <Frame x:Name="Index" />
     </Grid>

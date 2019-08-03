@@ -583,23 +583,5 @@ namespace Radio.Wpf.Pages
             }
             _toPinItem = true;
         }
-
-        private void Page_KeyDown(object sender, KeyEventArgs e)
-        {
-            if (e.Key == Key.Space)
-            {
-                PausePlay_Click(sender, e);
-            }
-            else if (e.Key == Key.Right)
-            {
-                AudioPlayer.Instance.ChannelPosition += 10;
-            }
-            else if (e.Key == Key.Left)
-            {
-                AudioPlayer.Instance.ChannelPosition -= 10;
-            }
-
-            e.Handled = true;
-        }
     }
 }
