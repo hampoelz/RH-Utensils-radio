@@ -7,7 +7,7 @@ using System.Windows;
 // Attribute gesteuert. Ändern Sie diese Attributwerte, um die Informationen zu ändern,
 // die einer Assembly zugeordnet sind.
 [assembly: AssemblyTitle("RH Radio")]
-[assembly: AssemblyDescription("")]
+[assembly: AssemblyDescription("Ein leistungsstarker Online Radio Client und Player für Offline / Online Musik")]
 [assembly: AssemblyConfiguration("")]
 [assembly: AssemblyCompany("HampisProjekte")]
 [assembly: AssemblyProduct("RH Radio")]
@@ -31,11 +31,11 @@ using System.Windows;
 
 [assembly: ThemeInfo(
     ResourceDictionaryLocation.None, //Speicherort der designspezifischen Ressourcenwörterbücher
-                                     //(wird verwendet, wenn eine Ressource auf der Seite nicht gefunden wird,
-                                     // oder in den Anwendungsressourcen-Wörterbüchern nicht gefunden werden kann.)
+    //(wird verwendet, wenn eine Ressource auf der Seite nicht gefunden wird,
+    // oder in den Anwendungsressourcen-Wörterbüchern nicht gefunden werden kann.)
     ResourceDictionaryLocation.SourceAssembly //Speicherort des generischen Ressourcenwörterbuchs
-                                              //(wird verwendet, wenn eine Ressource auf der Seite nicht gefunden wird,
-                                              // designspezifischen Ressourcenwörterbuch nicht gefunden werden kann.)
+    //(wird verwendet, wenn eine Ressource auf der Seite nicht gefunden wird,
+    // designspezifischen Ressourcenwörterbuch nicht gefunden werden kann.)
 )]
 
 // Versionsinformationen für eine Assembly bestehen aus den folgenden vier Werten:
@@ -48,6 +48,6 @@ using System.Windows;
 // Sie können alle Werte angeben oder Standardwerte für die Build- und Revisionsnummern verwenden,
 // indem Sie "*" wie unten gezeigt eingeben:
 // [assembly: AssemblyVersion("1.0.*")]
-[assembly: AssemblyVersion("0.0.1.0")]
-[assembly: AssemblyFileVersion("0.0.1.0")]
+[assembly: AssemblyVersion("0.0.2.0")]
+[assembly: AssemblyFileVersion("0.0.2.0")]
 [assembly: NeutralResourcesLanguage("de")]
