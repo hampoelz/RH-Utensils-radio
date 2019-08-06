@@ -117,9 +117,14 @@
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </ApplicationDefinition>
+    <Compile Include="Modules\UnderConstruction.xaml.cs">
+      <DependentUpon>UnderConstruction.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="Modules\FileInfo.xaml.cs">
+      <DependentUpon>FileInfo.xaml</DependentUpon>
+    </Compile>
     <Compile Include="SampleAggregator.cs" />
     <Compile Include="Utilities\AudioPlayer.cs" />
-    <Compile Include="Utilities\Converter.cs" />
     <Compile Include="Utilities\InstanceHelper.cs" />
     <Compile Include="Utilities\KeyDownEvent.cs" />
     <Compile Include="Utilities\LogHelper.cs" />
@@ -144,6 +149,14 @@
       <DependentUpon>MainWindow.xaml</DependentUpon>
       <SubType>Code</SubType>
     </Compile>
+    <Page Include="Modules\UnderConstruction.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="Modules\FileInfo.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
     <Page Include="Pages\Settings.xaml">
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
@@ -212,6 +225,15 @@
   </ItemGroup>
   <ItemGroup>
     <Resource Include="Assets\music-note.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <Resource Include="Assets\under-construction-light.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <Resource Include="Assets\under-construction-dark.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <Resource Include="Assets\cloud.png" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
 </Project>

@@ -1,47 +1,290 @@
-﻿using NAudio.Wave;
-using Sample_NAudio;
-using System;
+﻿using System;
 using System.ComponentModel;
 using System.Windows.Threading;
+using NAudio.Wave;
+using Sample_NAudio;
+using TagLib;
 using WPFSoundVisualizationLib;
 
 namespace Radio.Wpf.Utilities
 {
-    public class AudioPlayer : INotifyPropertyChanged, ISpectrumPlayer, IDisposable
+    public class AudioPlayer : ISpectrumPlayer, IDisposable
     {
-        private static AudioPlayer instance;
-        private readonly DispatcherTimer positionTimer = new DispatcherTimer(DispatcherPriority.ApplicationIdle);
-        private readonly int fftDataSize = (int)FFTDataSize.FFT2048;
+        public enum FileResult
+        {
+            File = 1,
+            Stream = 2
+        }
 
-        private bool disposed;
-        private bool canPlay;
+        private static AudioPlayer instance;
+        private readonly int fftDataSize = (int) FFTDataSize.FFT2048;
+        private readonly DispatcherTimer positionTimer = new DispatcherTimer(DispatcherPriority.ApplicationIdle);
+        private WaveStream activeStream;
+
+        public bool CanOpen;
         private bool canPause;
+        private bool canPlay;
         private bool canStop;
-        private bool isPlaying;
-        private bool inChannelTimerUpdate;
         private double channelLength;
         private double channelPosition;
-        private bool inChannelSet;
 
-        private WaveOutEvent waveOutDevice;
-        private WaveStream activeStream;
+        private bool disposed;
+
+        private File fileTag;
+        private bool inChannelSet;
+        private bool inChannelTimerUpdate;
         private WaveChannel32 inputStream;
+        private bool isPlaying;
         private SampleAggregator sampleAggregator;
 
-        private TagLib.File fileTag;
+        private WaveOutEvent waveOutDevice;
 
-        public static string Path;
-        //public static List<string> PlaylistFiles;
+        public string Path { get; private set; }
+        public FileResult? PathType { get; private set; }
+
+        public File FileTag
+        {
+            get => fileTag;
+            set
+            {
+                var oldValue = fileTag;
+                fileTag = value;
+                if (oldValue != fileTag)
+                    NotifyPropertyChanged("FileTag");
+            }
+        }
+
+        public WaveStream ActiveStream
+        {
+            get => activeStream;
+            protected set
+            {
+                var oldValue = activeStream;
+                activeStream = value;
+                if (oldValue != activeStream)
+                    NotifyPropertyChanged("ActiveStream");
+            }
+        }
+
+        public double ChannelLength
+        {
+            get => channelLength;
+            protected set
+            {
+                var oldValue = channelLength;
+                channelLength = value;
+                if (Math.Abs(oldValue - channelLength) > 1)
+                    NotifyPropertyChanged("ChannelLength");
+            }
+        }
+
+        public double ChannelPosition
+        {
+            get => channelPosition;
+            set
+            {
+                if (inChannelSet) return;
+                inChannelSet = true; // Avoid recursion
+                var oldValue = channelPosition;
+                var position = Math.Max(0, Math.Min(value, ChannelLength));
+                if (!inChannelTimerUpdate && ActiveStream != null)
+                    ActiveStream.Position =
+                        (long) (position / ActiveStream.TotalTime.TotalSeconds * ActiveStream.Length);
+                channelPosition = position;
+                if (ActiveStream != null && Math.Abs(oldValue - ActiveStream.Position) > 1)
+                    NotifyPropertyChanged("ChannelPosition");
+                inChannelSet = false;
+            }
+        }
+
+        public bool CanPlay
+        {
+            get => canPlay;
+            protected set
+            {
+                var oldValue = canPlay;
+                canPlay = value;
+                if (oldValue != canPlay)
+                    NotifyPropertyChanged("CanPlay");
+            }
+        }
+
+        public bool CanPause
+        {
+            get => canPause;
+            protected set
+            {
+                var oldValue = canPause;
+                canPause = value;
+                if (oldValue != canPause)
+                    NotifyPropertyChanged("CanPause");
+            }
+        }
+
+        public bool CanStop
+        {
+            get => canStop;
+            protected set
+            {
+                var oldValue = canStop;
+                canStop = value;
+                if (oldValue != canStop)
+                    NotifyPropertyChanged("CanStop");
+            }
+        }
+
+        public bool IsPlaying
+        {
+            get => isPlaying;
+            protected set
+            {
+                var oldValue = isPlaying;
+                isPlaying = value;
+                if (oldValue != isPlaying)
+                    NotifyPropertyChanged("IsPlaying");
+                positionTimer.IsEnabled = value;
+            }
+        }
+
+        private void StopAndCloseStream()
+        {
+            waveOutDevice?.Stop();
+            if (activeStream != null)
+            {
+                ActiveStream.Close();
+                ActiveStream = null;
+
+                inputStream.Close();
+                inputStream = null;
+            }
+
+            if (waveOutDevice == null) return;
+            waveOutDevice.Dispose();
+            waveOutDevice = null;
+        }
+
+        public void Stop()
+        {
+            if (!Instance.CanStop) return;
+
+            waveOutDevice?.Stop();
+            IsPlaying = false;
+            CanStop = false;
+            CanPlay = false;
+            CanPause = false;
+
+            Path = null;
+
+            NotifyPropertyChanged("Stop");
+        }
+
+        public void Pause()
+        {
+            if (!IsPlaying || !CanPause) return;
+
+            waveOutDevice.Pause();
+            IsPlaying = false;
+            CanPlay = true;
+            CanPause = false;
+
+            NotifyPropertyChanged("Pause");
+        }
+
+        public void Play()
+        {
+            if (!CanPlay) return;
+
+            waveOutDevice.Play();
+            IsPlaying = true;
+            CanPause = true;
+            CanPlay = false;
+            CanStop = true;
+
+            NotifyPropertyChanged("Play");
+        }
+
+        public void OpenFile(string path)
+        {
+            if (!CanOpen) return;
+
+            StopAndCloseStream();
+
+            if (ActiveStream != null) ChannelPosition = 0;
+
+            try
+            {
+                PathType = null;
+
+                if (System.IO.File.Exists(path))
+                {
+                    if (path.EndsWith(".radio")) path = System.IO.File.ReadAllText(path);
+                    else PathType = FileResult.File;
+                }
+
+                if (Uri.TryCreate(path, UriKind.Absolute, out var uriResult) &&
+                    (uriResult.Scheme == Uri.UriSchemeHttp || uriResult.Scheme == Uri.UriSchemeHttps))
+                {
+                    path = uriResult.ToString();
+
+                    PathType = FileResult.Stream;
+                }
+
+                if (PathType == null)
+                {
+                    ActiveStream = null;
+                    CanPlay = false;
+                    Path = null;
+                    return;
+                }
+
+                Path = path;
+
+                waveOutDevice = new WaveOutEvent
+                {
+                    DesiredLatency = 100
+                };
+                ActiveStream = new MediaFoundationReader(path);
+                inputStream = new WaveChannel32(ActiveStream);
+                sampleAggregator = new SampleAggregator(fftDataSize);
+                inputStream.Sample += InputStream_Sample;
+                waveOutDevice.Init(inputStream);
+
+                ChannelLength = 0;
+                ChannelLength = inputStream.TotalTime.TotalSeconds;
+
+                NotifyPropertyChanged("Content");
+
+                switch (PathType)
+                {
+                    case FileResult.File:
+                        FileTag = File.Create(path);
+                        break;
+
+                    case FileResult.Stream:
+                        FileTag = null;
+                        break;
+                }
+
+                CanPlay = true;
+
+                Instance.Play();
+            }
+            catch
+            {
+                ActiveStream = null;
+                CanPlay = false;
+                Path = null;
+            }
+        }
+
+        private void InputStream_Sample(object sender, SampleEventArgs e)
+        {
+            sampleAggregator.Add(e.Left, e.Right);
+        }
 
         #region Instance
 
-        public static AudioPlayer Instance
-        {
-            get
-            {
-                return instance ?? (instance = new AudioPlayer());
-            }
-        }
+        public static AudioPlayer Instance => instance ?? (instance = new AudioPlayer());
 
         private AudioPlayer()
         {
@@ -52,7 +295,8 @@ namespace Radio.Wpf.Utilities
         private void PositionTimer_Tick(object sender, EventArgs e)
         {
             inChannelTimerUpdate = true;
-            ChannelPosition = ((double)ActiveStream.Position / (double)ActiveStream.Length) * ActiveStream.TotalTime.TotalSeconds;
+            ChannelPosition = ActiveStream.Position / (double) ActiveStream.Length *
+                              ActiveStream.TotalTime.TotalSeconds;
             inChannelTimerUpdate = false;
         }
 
@@ -70,10 +314,7 @@ namespace Radio.Wpf.Utilities
         {
             if (!disposed)
             {
-                if (disposing)
-                {
-                    StopAndCloseStream();
-                }
+                if (disposing) StopAndCloseStream();
 
                 disposed = true;
             }
@@ -96,7 +337,7 @@ namespace Radio.Wpf.Utilities
                 maxFrequency = ActiveStream.WaveFormat.SampleRate / 2.0d;
             else
                 maxFrequency = 22050; // Assume a default 44.1 kHz sample rate.
-            return (int)((frequency / maxFrequency) * (fftDataSize / 2));
+            return (int) (frequency / maxFrequency * (fftDataSize / 2));
         }
 
         #endregion ISpectrumPlayer
@@ -105,208 +346,11 @@ namespace Radio.Wpf.Utilities
 
         public event PropertyChangedEventHandler PropertyChanged;
 
-        public void NotifyPropertyChanged(String info)
+        public void NotifyPropertyChanged(string info)
         {
             PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(info));
         }
 
         #endregion INotifyPropertyChanged
-
-        public TagLib.File FileTag
-        {
-            get { return fileTag; }
-            set
-            {
-                TagLib.File oldValue = fileTag;
-                fileTag = value;
-                if (oldValue != fileTag)
-                    NotifyPropertyChanged("FileTag");
-            }
-        }
-
-        public WaveStream ActiveStream
-        {
-            get { return activeStream; }
-            protected set
-            {
-                WaveStream oldValue = activeStream;
-                activeStream = value;
-                if (oldValue != activeStream)
-                    NotifyPropertyChanged("ActiveStream");
-            }
-        }
-
-        public double ChannelLength
-        {
-            get { return channelLength; }
-            protected set
-            {
-                double oldValue = channelLength;
-                channelLength = value;
-                if (oldValue != channelLength)
-                    NotifyPropertyChanged("ChannelLength");
-            }
-        }
-
-        public double ChannelPosition
-        {
-            get { return channelPosition; }
-            set
-            {
-                if (!inChannelSet)
-                {
-                    inChannelSet = true; // Avoid recursion
-                    double oldValue = channelPosition;
-                    double position = Math.Max(0, Math.Min(value, ChannelLength));
-                    if (!inChannelTimerUpdate && ActiveStream != null)
-                        ActiveStream.Position = (long)((position / ActiveStream.TotalTime.TotalSeconds) * ActiveStream.Length);
-                    channelPosition = position;
-                    if (oldValue != ActiveStream.Position)
-                        NotifyPropertyChanged("ChannelPosition");
-                    inChannelSet = false;
-                }
-            }
-        }
-
-        private void StopAndCloseStream()
-        {
-            waveOutDevice?.Stop();
-            if (activeStream != null)
-            {
-                ActiveStream.Close();
-                ActiveStream = null;
-
-                inputStream.Close();
-                inputStream = null;
-            }
-            if (waveOutDevice != null)
-            {
-                waveOutDevice.Dispose();
-                waveOutDevice = null;
-            }
-        }
-
-        public void Stop()
-        {
-            waveOutDevice?.Stop();
-            IsPlaying = false;
-            CanStop = false;
-            CanPlay = false;
-            CanPause = false;
-
-            App.File = "";
-        }
-
-        public void Pause()
-        {
-            if (IsPlaying && CanPause)
-            {
-                waveOutDevice.Pause();
-                IsPlaying = false;
-                CanPlay = true;
-                CanPause = false;
-            }
-        }
-
-        public void Play()
-        {
-            if (CanPlay)
-            {
-                waveOutDevice.Play();
-                IsPlaying = true;
-                CanPause = true;
-                CanPlay = false;
-                CanStop = true;
-            }
-        }
-
-        public void OpenFile(string path)
-        {
-            StopAndCloseStream();
-
-            if (ActiveStream != null)
-            {
-                ChannelPosition = 0;
-            }
-
-            try
-            {
-                waveOutDevice = new WaveOutEvent()
-                {
-                    DesiredLatency = 100
-                };
-                ActiveStream = new MediaFoundationReader(path);
-                inputStream = new WaveChannel32(ActiveStream);
-                sampleAggregator = new SampleAggregator(fftDataSize);
-                inputStream.Sample += InputStream_Sample;
-                waveOutDevice.Init(inputStream);
-
-                ChannelLength = 0;
-                ChannelLength = inputStream.TotalTime.TotalSeconds;
-                if (System.IO.File.Exists(path)) FileTag = TagLib.File.Create(path);
-                else FileTag = null;
-
-                CanPlay = true;
-            }
-            catch
-            {
-                ActiveStream = null;
-                CanPlay = false;
-            }
-        }
-
-        public bool CanPlay
-        {
-            get { return canPlay; }
-            protected set
-            {
-                bool oldValue = canPlay;
-                canPlay = value;
-                if (oldValue != canPlay)
-                    NotifyPropertyChanged("CanPlay");
-            }
-        }
-
-        public bool CanPause
-        {
-            get { return canPause; }
-            protected set
-            {
-                bool oldValue = canPause;
-                canPause = value;
-                if (oldValue != canPause)
-                    NotifyPropertyChanged("CanPause");
-            }
-        }
-
-        public bool CanStop
-        {
-            get { return canStop; }
-            protected set
-            {
-                bool oldValue = canStop;
-                canStop = value;
-                if (oldValue != canStop)
-                    NotifyPropertyChanged("CanStop");
-            }
-        }
-
-        public bool IsPlaying
-        {
-            get { return isPlaying; }
-            protected set
-            {
-                bool oldValue = isPlaying;
-                isPlaying = value;
-                if (oldValue != isPlaying)
-                    NotifyPropertyChanged("IsPlaying");
-                positionTimer.IsEnabled = value;
-            }
-        }
-
-        private void InputStream_Sample(object sender, SampleEventArgs e)
-        {
-            sampleAggregator.Add(e.Left, e.Right);
-        }
     }
 }

@@ -9,7 +9,7 @@
   <menu>
     <Startseite>
       <site_Title>Musik Player</site_Title>
-      <site_Icon>{extensionsDirectory}\{extensionName}\{extensionVersion}\Icons\music-player.png</site_Icon>
+      <site_Icon>MusicCircleOutline</site_Icon>
       <site_Path>{extensionsDirectory}\{extensionName}\{extensionVersion}\Radio.exe</site_Path>
       <site_StartArguments>"{fileAssociation}" -page Player</site_StartArguments>
     </Startseite>
@@ -21,7 +21,7 @@
     </Abstand>
     <Einstellungen>
       <site_Title>Einstellungen</site_Title>
-      <site_Icon>{extensionsDirectory}\{extensionName}\{extensionVersion}\Icons\settings.png</site_Icon>
+      <site_Icon>SettingsOutline</site_Icon>
       <site_Path>{extensionsDirectory}\{extensionName}\{extensionVersion}\Radio.exe</site_Path>
       <site_StartArguments>-page Settings</site_StartArguments>
     </Einstellungen>

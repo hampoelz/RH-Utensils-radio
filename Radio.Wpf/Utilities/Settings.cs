@@ -1,36 +1,37 @@
-﻿using MahApps.Metro;
-using MaterialDesignThemes.Wpf;
-using Newtonsoft.Json;
-using Radio.Wpf.Pages;
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Windows;
+using System.Windows.Media.Imaging;
+using MahApps.Metro;
+using MaterialDesignThemes.Wpf;
+using Newtonsoft.Json;
+using Radio.Wpf.Modules;
+using Radio.Wpf.Pages;
 
 namespace Radio.Wpf.Utilities
 {
     public static class Settings
     {
-        public static bool HasProperty(this Type obj, string propertyName)
-        {
-            return obj.GetProperty(propertyName) != null;
-        }
+        private static string _theme = "dark";
 
-        private static string theme = "dark";
+        private static string _test;
+
+        private static string _pinned;
 
         public static string Theme
         {
-            get => theme;
+            get => _theme;
             set
             {
                 value = value.ToLower();
 
-                if (theme == value || string.IsNullOrEmpty(value)) return;
+                if (_theme == value || string.IsNullOrEmpty(value)) return;
 
-                List<string> Themes = new List<string> { "dark", "light" };
+                var themes = new List<string> {"dark", "light"};
 
-                if (!Themes.Contains(value)) return;
+                if (!themes.Contains(value)) return;
 
-                theme = value;
+                _theme = value;
 
                 try
                 {
@@ -38,7 +39,12 @@ namespace Radio.Wpf.Utilities
                     {
                         new PaletteHelper().SetLightDark(false);
 
-                        ThemeManager.ChangeAppStyle(Application.Current, ThemeManager.GetAccent("blue"), ThemeManager.GetAppTheme("BaseLight"));
+                        ThemeManager.ChangeAppStyle(Application.Current, ThemeManager.GetAccent("blue"),
+                            ThemeManager.GetAppTheme("BaseLight"));
+
+                        UnderConstruction.Image.Source =
+                            new BitmapImage(new Uri("/Radio;component/Assets/under-construction-dark.png",
+                                UriKind.Relative));
 
                         Pages.Settings.ThemeProperty.IsChecked = true;
                     }
@@ -46,7 +52,11 @@ namespace Radio.Wpf.Utilities
                     {
                         new PaletteHelper().SetLightDark(true);
 
-                        ThemeManager.ChangeAppStyle(Application.Current, ThemeManager.GetAccent("blue"), ThemeManager.GetAppTheme("BaseDark"));
+                        ThemeManager.ChangeAppStyle(Application.Current, ThemeManager.GetAccent("blue"),
+                            ThemeManager.GetAppTheme("BaseDark"));
+
+                        UnderConstruction.Image.Source = new BitmapImage(
+                            new Uri("/Radio;component/Assets/under-construction-light.png", UriKind.Relative));
 
                         Pages.Settings.ThemeProperty.IsChecked = false;
                     }
@@ -58,50 +68,50 @@ namespace Radio.Wpf.Utilities
             }
         }
 
-        private static string test;
-
         public static string Test
         {
-            get => test;
+            get => _test;
             set
             {
-                if (test == value) return;
+                if (_test == value) return;
 
-                if (bool.TryParse(value, out bool result))
-                {
-                    Pages.Settings.TestProperty.IsChecked = result;
-                    test = value;
-                }
+                if (!bool.TryParse(value, out var result)) return;
+                Pages.Settings.TestProperty.IsChecked = result;
+                _test = value;
             }
         }
 
-        private static string pinned;
-
         public static string Pinned
         {
-            get => pinned;
+            get => _pinned;
             set
             {
-                if (value == pinned || string.IsNullOrEmpty(value)) return;
+                if (value == _pinned || string.IsNullOrEmpty(value)) return;
 
-                pinned = value;
+                _pinned = value;
 
                 var json = value.Replace("'", "\"");
 
                 var settings = new JsonSerializerSettings();
                 settings.Converters.Add(new TupleConverter());
 
-                var items = (List<PinItem>)JsonConvert.DeserializeObject(json, new List<PinItem>().GetType(), settings);
+                var items = (List<PinItem>) JsonConvert.DeserializeObject(json, new List<PinItem>().GetType(),
+                    settings);
 
-                foreach (PinItem item in items)
+                foreach (var item in items)
                 {
                     item.Title = item.Title.Replace("&apos;", "'");
                     item.Path = item.Path.Replace("&apos;", "'");
                 }
 
-                Player.Pins.ItemsSource = null;
-                Player.Pins.ItemsSource = items;
+                Player.PinnedItems.ItemsSource = null;
+                Player.PinnedItems.ItemsSource = items;
             }
+        }
+
+        public static bool HasProperty(this Type obj, string propertyName)
+        {
+            return obj.GetProperty(propertyName) != null;
         }
     }
 }

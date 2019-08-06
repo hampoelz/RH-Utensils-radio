@@ -1,0 +1,29 @@
+﻿<UserControl x:Class="Radio.Wpf.Modules.UnderConstruction"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+             mc:Ignorable="d"
+             TextElement.Foreground="{DynamicResource MaterialDesignBody}"
+             TextElement.FontWeight="Regular"
+             TextElement.FontSize="13"
+             TextOptions.TextFormattingMode="Ideal"
+             TextOptions.TextRenderingMode="Auto"
+             Background="Transparent"
+             FontFamily="{DynamicResource MaterialDesignFont}"
+
+             d:DesignHeight="160" d:DesignWidth="740">
+
+    <Grid>
+        <Grid Margin="20" HorizontalAlignment="Center">
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="250" />
+                <ColumnDefinition Width="*" />
+            </Grid.ColumnDefinitions>
+
+            <Image x:Name="_Image" Source="/Radio;component/Assets/under-construction-light.png" Grid.Column="0" />
+            <TextBlock Text="Under Construction" Margin="0,10,10,10" VerticalAlignment="Center"
+                       HorizontalAlignment="Center" Grid.Column="1" FontSize="45" FontWeight="Bold" />
+        </Grid>
+    </Grid>
+</UserControl>

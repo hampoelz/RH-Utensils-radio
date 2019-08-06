@@ -1,5 +1,5 @@
-﻿using Radio.Wpf.Functions;
-using System.Diagnostics;
+﻿using System.Diagnostics;
+using System.Linq;
 
 namespace Radio.Wpf.Utilities
 {
@@ -7,17 +7,9 @@ namespace Radio.Wpf.Utilities
     {
         public static Process GetMainProcess()
         {
-            Process[] _allProcs = Process.GetProcessesByName("RH Utensils");
+            var allProcs = Process.GetProcessesByName("RH Utensils");
 
-            for (int i = 0; i < _allProcs.Length; i++)
-            {
-                if (_allProcs[i].MainWindowTitle.EndsWith(Config.Name))
-                {
-                    return _allProcs[i];
-                }
-            }
-
-            return null;
+            return allProcs.FirstOrDefault(t => t.MainWindowTitle.EndsWith(Config.Name));
         }
     }
 }

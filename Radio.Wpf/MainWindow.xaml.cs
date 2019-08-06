@@ -1,7 +1,7 @@
-﻿using Radio.Wpf.Utilities;
-using System;
+﻿using System;
 using System.Windows;
 using System.Windows.Input;
+using Radio.Wpf.Utilities;
 
 namespace Radio.Wpf
 {
@@ -16,19 +16,17 @@ namespace Radio.Wpf
         {
             MessageHelper.ReceiveDataMessages();
 
-            string[] args = Environment.GetCommandLineArgs();
+            var args = Environment.GetCommandLineArgs();
 
             for (var arg = 1; arg != args.Length; ++arg)
-            {
                 switch (args[arg])
                 {
                     case "-page":
                         Index.Navigate(new Uri("Pages/" + args[arg + 1] + ".xaml", UriKind.Relative));
                         continue;
 
-                        //other cases
+                    //other cases
                 }
-            }
         }
 
         private void MetroWindow_KeyDown(object sender, KeyEventArgs e)

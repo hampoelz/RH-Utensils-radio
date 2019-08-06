@@ -1,5 +1,4 @@
-﻿using Radio.Wpf.Functions;
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Runtime.InteropServices;
@@ -13,32 +12,32 @@ namespace Radio.Wpf.Utilities
 {
     public static class MessageHelper
     {
-        private const int WM_COPYDATA = 0x004A;
+        private const int WmCopydata = 0x004A;
 
         [DllImport("user32", EntryPoint = "SendMessageA")]
         private static extern int SendMessage(IntPtr Hwnd, int wMsg, IntPtr wParam, IntPtr lParam);
 
         public static void SendDataMessage(Process targetProcess, string msg)
         {
-            IntPtr _stringMessageBuffer = Marshal.StringToHGlobalUni(msg);
+            var stringMessageBuffer = Marshal.StringToHGlobalUni(msg);
 
-            COPYDATASTRUCT _copyData = new COPYDATASTRUCT
+            var copyData = new Copydatastruct
             {
                 dwData = IntPtr.Zero,
-                lpData = _stringMessageBuffer,
+                lpData = stringMessageBuffer,
                 cbData = msg.Length * 2
             };
-            IntPtr _copyDataBuff = IntPtrAlloc(_copyData);
+            var copyDataBuff = IntPtrAlloc(copyData);
 
-            SendMessage(targetProcess.MainWindowHandle, WM_COPYDATA, IntPtr.Zero, _copyDataBuff);
+            SendMessage(targetProcess.MainWindowHandle, WmCopydata, IntPtr.Zero, copyDataBuff);
 
-            Marshal.FreeHGlobal(_copyDataBuff);
-            Marshal.FreeHGlobal(_stringMessageBuffer);
+            Marshal.FreeHGlobal(copyDataBuff);
+            Marshal.FreeHGlobal(stringMessageBuffer);
         }
 
         private static IntPtr IntPtrAlloc<T>(T param)
         {
-            IntPtr retval = Marshal.AllocHGlobal(Marshal.SizeOf(param));
+            var retval = Marshal.AllocHGlobal(Marshal.SizeOf(param));
             Marshal.StructureToPtr(param, retval, false);
             return retval;
         }
@@ -48,19 +47,17 @@ namespace Radio.Wpf.Utilities
             if (!(Application.Current.MainWindow is MainWindow mw)) return;
 
             var hwndSource = HwndSource.FromHwnd(new WindowInteropHelper(mw).Handle);
-            hwndSource.AddHook(new HwndSourceHook(WndProc));
+            hwndSource?.AddHook(WndProc);
         }
 
         private static IntPtr WndProc(IntPtr hwnd, int msg, IntPtr wParam, IntPtr lParam, ref bool handled)
         {
-            if (msg == MessageHelper.WM_COPYDATA)
-            {
-                COPYDATASTRUCT _dataStruct = Marshal.PtrToStructure<COPYDATASTRUCT>(lParam);
+            if (msg != WmCopydata) return IntPtr.Zero;
+            var dataStruct = Marshal.PtrToStructure<Copydatastruct>(lParam);
 
-                string _msg = Marshal.PtrToStringUni(_dataStruct.lpData, _dataStruct.cbData / 2);
+            var _msg = Marshal.PtrToStringUni(dataStruct.lpData, dataStruct.cbData / 2);
 
-                HandleMessages(_msg);
-            }
+            HandleMessages(_msg);
 
             return IntPtr.Zero;
         }
@@ -85,18 +82,12 @@ namespace Radio.Wpf.Utilities
                     var newValue = ExtractQuotes(msg)[1];
 
                     foreach (var prop in typeof(Settings).GetProperties())
-                    {
                         if (prop.Name.Equals(parameter, StringComparison.InvariantCultureIgnoreCase))
-                        {
                             prop.SetValue(null, newValue);
-                        }
-                    }
                 }
                 else if (msg.StartsWith("open File"))
                 {
-                    if (!Pages.Player.playMusik) return;
-
-                    App.File = ExtractQuote(msg);
+                    AudioPlayer.Instance.OpenFile(ExtractQuote(msg));
                 }
                 else if (msg.StartsWith("key"))
                 {
@@ -119,31 +110,25 @@ namespace Radio.Wpf.Utilities
         {
             var reg = new Regex("\".*\"");
             var match = reg.Matches(str);
-            foreach (var item in match)
-            {
-                return item.ToString().Trim('"');
-            }
+            foreach (var item in match) return item.ToString().Trim('"');
 
             return "";
         }
 
         private static List<string> ExtractQuotes(string str)
         {
-            List<string> Quotes = new List<string>();
+            var quotes = new List<string>();
 
             var reg = new Regex("\".*?\"");
             var matches = reg.Matches(str);
-            foreach (var item in matches)
-            {
-                Quotes.Add(item.ToString().Trim('"'));
-            }
+            foreach (var item in matches) quotes.Add(item.ToString().Trim('"'));
 
-            return Quotes;
+            return quotes;
         }
     }
 
     [StructLayout(LayoutKind.Sequential)]
-    internal struct COPYDATASTRUCT
+    internal struct Copydatastruct
     {
         public IntPtr dwData;
         public int cbData;

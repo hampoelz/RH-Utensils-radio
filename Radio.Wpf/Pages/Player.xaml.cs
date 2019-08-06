@@ -1,18 +1,23 @@
-﻿using MaterialDesignThemes.Wpf;
-using Newtonsoft.Json;
-using Radio.Wpf.Utilities;
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Collections.Specialized;
 using System.ComponentModel;
 using System.Diagnostics;
 using System.IO;
 using System.Linq;
+using System.Net;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Input;
 using System.Windows.Media;
 using System.Windows.Media.Imaging;
+using MaterialDesignThemes.Wpf;
+using Microsoft.Win32;
+using Newtonsoft.Json;
+using Radio.Wpf.Modules;
+using Radio.Wpf.Utilities;
+using static Radio.Wpf.Utilities.AudioPlayer;
+using FileInfo = Radio.Wpf.Modules.FileInfo;
 
 namespace Radio.Wpf.Pages
 {
@@ -20,172 +25,68 @@ namespace Radio.Wpf.Pages
     {
         public string Title { get; set; }
         public string Path { get; set; }
+        public FileResult? PathType { get; set; }
         public Visibility Visibility { get; set; }
     }
 
-    public partial class Player : Page
+    public partial class Player
     {
-        public static bool playMusik;
-
-        public static ListBox Pins;
-
-        public static TextBlock FileName = new TextBlock();
-
-        public static Button SkipPreviousButton = new Button();
-        public static PackIcon SkipPreviousIcon = new PackIcon();
-
-        public static Button PausePlayButton = new Button();
-        public static PackIcon PausePlayIcon = new PackIcon();
-
-        public static Button StopButton = new Button();
-        public static PackIcon StopIcon = new PackIcon();
-
-        public static Button SkipNextButton = new Button();
-        public static PackIcon SkipNextIcon = new PackIcon();
+        public static ListBox PinnedItems;
 
         public Player()
         {
             InitializeComponent();
 
-            LoadExpressionTheme();
+            Resources.MergedDictionaries.Clear();
+            var themeResources =
+                Application.LoadComponent(new Uri("Expression.xaml", UriKind.Relative)) as ResourceDictionary;
+            Resources.MergedDictionaries.Add(themeResources);
 
-            AudioPlayer soundEngine = AudioPlayer.Instance;
+            var soundEngine = Instance;
             soundEngine.PropertyChanged += NAudioEngine_PropertyChanged;
 
-            spectrumAnalyzer1.RegisterSoundPlayer(soundEngine);
-            spectrumAnalyzer2.RegisterSoundPlayer(soundEngine);
+            SpectrumAnalyzer1.RegisterSoundPlayer(soundEngine);
+            SpectrumAnalyzer2.RegisterSoundPlayer(soundEngine);
 
-            Pins = PinsTemplate;
-            Pins.Visibility = Visibility;
-            Pins.ItemsSource = new List<PinItem>();
+            ContentArea.Content = new UnderConstruction();
 
-            ((INotifyCollectionChanged)Pins.Items).CollectionChanged += PinsCollectionChanged;
+            PinnedItems = _PinnedItems;
+            PinnedItems.ItemsSource = new List<PinItem>();
 
-            FileName.Foreground = Brushes.White;
-            FileName.TextAlignment = TextAlignment.Center;
-            FileName.VerticalAlignment = VerticalAlignment.Center;
-            FileName.HorizontalAlignment = HorizontalAlignment.Stretch;
-            FileName.TextTrimming = TextTrimming.CharacterEllipsis;
-            FileName.FontSize = 30;
-            FileName.FontWeight = FontWeights.Bold;
-            FileName.FontFamily = new FontFamily("Roboto Black");
-            FileName.Text = "RH Radio";
-            FileName.ToolTip = FileName.Text;
+            ((INotifyCollectionChanged) PinnedItems.Items).CollectionChanged += PinnedItemsCollectionChanged;
 
-            NamePlaceholder.Children.Add(FileName);
-
-            CreateToolbarButton(SkipPreviousButton, SkipPreviousIcon, PackIconKind.SkipPreviousCircleOutline);
-            CreateToolbarButton(PausePlayButton, PausePlayIcon, PackIconKind.PlayCircleOutline);
-            CreateToolbarButton(StopButton, StopIcon, PackIconKind.StopCircleOutline);
-            CreateToolbarButton(SkipNextButton, SkipNextIcon, PackIconKind.SkipNextCircleOutline);
-
-            PausePlayButton.Click += PausePlay_Click;
-            StopButton.Click += Stop_Click;
-
-            SkipPreviousButton.IsEnabled = false;
-            StopButton.IsEnabled = false;
-            SkipNextButton.IsEnabled = false;
-
-            playMusik = true;
-        }
-
-        private void CreateToolbarButton(Button btn, PackIcon pIcon, PackIconKind pIcoKind)
-        {
-            btn.VerticalAlignment = VerticalAlignment.Center;
-            btn.Width = Double.NaN;
-            btn.Height = Double.NaN;
-
-            btn.Style = FindResource("MaterialDesignToolButton") as Style;
-
-            btn.Foreground = Brushes.White;
-
-            btn.Content = pIcon;
-
-            pIcon.Kind = pIcoKind;
-            pIcon.Height = Double.NaN;
-            pIcon.Width = 30;
-            pIcon.VerticalContentAlignment = VerticalAlignment.Center;
-            pIcon.HorizontalContentAlignment = HorizontalAlignment.Center;
-
-            Toolbar.Children.Add(btn);
-        }
-
-        private void LoadExpressionTheme()
-        {
-            Resources.MergedDictionaries.Clear();
-            ResourceDictionary themeResources = Application.LoadComponent(new Uri("Expression.xaml", UriKind.Relative)) as ResourceDictionary;
-            Resources.MergedDictionaries.Add(themeResources);
+            Instance.CanOpen = true;
         }
 
         #region NAudio Engine Events
 
         private void NAudioEngine_PropertyChanged(object sender, PropertyChangedEventArgs e)
         {
-            AudioPlayer engine = AudioPlayer.Instance;
+            var engine = Instance;
             switch (e.PropertyName)
             {
                 case "FileTag":
+
                     if (engine.FileTag != null)
                     {
-                        TagLib.Tag tag = engine.FileTag.Tag;
+                        Title.Text = Path.GetFileNameWithoutExtension(engine.FileTag.Name);
 
-                        FileName.Text = Path.GetFileNameWithoutExtension(engine.FileTag.Name);
-
-                        Title.Text = tag.Title;
-                        Artists.Text = string.Join(", ", tag.Performers);
-                        Album.Text = tag.Album;
-                        Genre.Text = string.Join(", ", tag.Genres);
-                        Track.Text = tag.Track.ToString();
-                        Year.Text = tag.Year.ToString();
-                        Bitrate.Text = engine.FileTag.Properties.AudioBitrate.ToString() + " kBit/s";
-                        Copyright.Text = tag.Copyright;
-
-                        if (!string.IsNullOrWhiteSpace(tag.Title))
-                        {
-                            FileName.Text = tag.Title;
-                        }
-
-                        FileName.ToolTip = FileName.Text;
-
-                        if (tag.Pictures.Length > 0)
-                        {
-                            using (MemoryStream albumArtworkMemStream = new MemoryStream(tag.Pictures[0].Data.Data))
-                            {
-                                try
-                                {
-                                    BitmapImage albumImage = new BitmapImage();
-                                    albumImage.BeginInit();
-                                    albumImage.CacheOption = BitmapCacheOption.OnLoad;
-                                    albumImage.StreamSource = albumArtworkMemStream;
-                                    albumImage.EndInit();
-                                    Cover.Source = albumImage;
-                                }
-                                catch (NotSupportedException)
-                                {
-                                    Cover.Source = new BitmapImage(new Uri("/Radio;component/Assets/music-note.png", UriKind.Relative));
-                                }
-                                albumArtworkMemStream.Close();
-                            }
-                        }
-                        else
-                        {
-                            Cover.Source = new BitmapImage(new Uri("/Radio;component/Assets/music-note.png", UriKind.Relative));
-                        }
+                        if (!string.IsNullOrWhiteSpace(engine.FileTag.Tag.Title)) Title.Text = engine.FileTag.Tag.Title;
                     }
-                    else
-                    {
-                        Cover.Source = new BitmapImage(new Uri("/Radio;component/Assets/music-note.png", UriKind.Relative));
-                    }
+
                     break;
 
                 case "ChannelPosition":
+
                     if (double.IsNaN(engine.ChannelPosition)) return;
 
                     var currentPosition = TimeSpan.FromMilliseconds(engine.ChannelPosition);
-                    currentTime.Text = TimeSpan.FromSeconds(Math.Floor(currentPosition.TotalMilliseconds)).ToString(@"mm\:ss");
-                    Seekbar.Value = (int)TimeSpan.FromSeconds(Math.Floor(currentPosition.TotalMilliseconds)).TotalSeconds;
+                    CurrentTime.Text = TimeSpan.FromSeconds(Math.Floor(currentPosition.TotalMilliseconds))
+                        .ToString(@"mm\:ss");
+                    Seekbar.Value = (int) TimeSpan.FromSeconds(Math.Floor(currentPosition.TotalMilliseconds))
+                        .TotalSeconds;
 
-                    if (Seekbar.Value == Seekbar.Maximum)
+                    if (Math.Abs(Seekbar.Value - Seekbar.Maximum) < 1)
                     {
                         engine.ActiveStream.Position = 0;
 
@@ -203,50 +104,109 @@ namespace Radio.Wpf.Pages
 
                 case "ChannelLength":
 
-                    if (App.Title != null) FileName.Text = App.Title;
-
-                    FileName.ToolTip = FileName.Text;
-
-                    _toPinItem = false;
-
-                    Pin.IsChecked = false;
-
-                    foreach (PinItem item in (List<PinItem>)Pins.ItemsSource)
-                    {
-                        if (item.Path == App.File)
-                        {
-                            Pin.IsChecked = true;
-                        }
-                    }
-                    _toPinItem = true;
-
                     if (double.IsNaN(engine.ChannelLength)) return;
 
                     var maxPosition = TimeSpan.FromMilliseconds(engine.ChannelLength);
-                    length.Text = TimeSpan.FromSeconds(Math.Floor(maxPosition.TotalMilliseconds)).ToString(@"mm\:ss");
-                    Seekbar.Maximum = (int)TimeSpan.FromSeconds(Math.Floor(maxPosition.TotalMilliseconds)).TotalSeconds;
+                    Length.Text = TimeSpan.FromSeconds(Math.Floor(maxPosition.TotalMilliseconds)).ToString(@"mm\:ss");
+                    Seekbar.Maximum =
+                        (int) TimeSpan.FromSeconds(Math.Floor(maxPosition.TotalMilliseconds)).TotalSeconds;
 
                     break;
 
-                default:
-                    // Do Nothing
+                case "Play":
+
+                    PausePlayIcon.Kind = PackIconKind.PauseCircleOutline;
+                    StopButton.IsEnabled = true;
+
+                    break;
+
+                case "Pause":
+
+                    PausePlayIcon.Kind = PackIconKind.PlayCircleOutline;
+
+                    break;
+
+                case "Stop":
+
+                    ContentArea.Content = new UnderConstruction();
+
+                    PausePlayIcon.Kind = PackIconKind.PlayCircleOutline;
+
+                    Title.Text = "RH Radio";
+                    Seekbar.Minimum = 0;
+                    Seekbar.Maximum = 0;
+                    Seekbar.Value = 0;
+
+                    Length.Text = "00:00";
+                    CurrentTime.Text = "00:00";
+
+                    canPin = false;
+                    Pin.IsChecked = false;
+                    canPin = true;
+
+                    StopButton.IsEnabled = false;
+
+                    break;
+
+                case "Content":
+
+                    canPin = false;
+
+                    Pin.IsChecked = false;
+
+                    foreach (var item in (List<PinItem>) PinnedItems.ItemsSource)
+                        if (item.Path == Instance.Path)
+                            Pin.IsChecked = true;
+                    canPin = true;
+
+                    switch (Instance.PathType)
+                    {
+                        case FileResult.File:
+                            ContentArea.Content = new FileInfo();
+                            break;
+
+                        case FileResult.Stream:
+                            Title.Text = GetFilenameFromWebServer(Instance.Path);
+                            ContentArea.Content = new UnderConstruction();
+                            break;
+                    }
+
                     break;
             }
         }
 
+        public static string GetFilenameFromWebServer(string url)
+        {
+            var result = "";
+
+            var req = WebRequest.Create(url);
+            req.Method = "HEAD";
+            using (var resp = req.GetResponse())
+            {
+                if (string.IsNullOrEmpty(resp.Headers["Content-Disposition"])) return result;
+                result = resp.Headers["Content-Disposition"]
+                    .Substring(resp.Headers["Content-Disposition"].IndexOf("filename=", StringComparison.Ordinal) + 9)
+                    .Replace("\"", "");
+
+                result = Path.GetFileNameWithoutExtension(result);
+            }
+
+            return result;
+        }
+
         #endregion NAudio Engine Events
+
+        #region Player Engine
 
         private void OpenFile()
         {
-            Microsoft.Win32.OpenFileDialog openDialog = new Microsoft.Win32.OpenFileDialog
+            var openDialog = new OpenFileDialog
             {
                 Filter = "Musik Dateien (*.mp3)|*.mp3|Online Musik [Testzweck] (*.radio)|*.radio"
             };
-            if (openDialog.ShowDialog() == true)
-            {
-                StopAudioPlayer();
-                App.File = openDialog.FileName;
-            }
+            if (openDialog.ShowDialog() != true) return;
+            Instance.Stop();
+            Instance.OpenFile(openDialog.FileName);
         }
 
         private void OpenFile_Click(object sender, RoutedEventArgs e)
@@ -256,84 +216,31 @@ namespace Radio.Wpf.Pages
 
         private void PausePlay_Click(object sender, RoutedEventArgs e)
         {
-            if (AudioPlayer.Instance.IsPlaying && AudioPlayer.Instance.CanPause)
-            {
-                PausePlayIcon.Kind = PackIconKind.PlayCircleOutline;
-
-                AudioPlayer.Instance.Pause();
-            }
-            else if (!AudioPlayer.Instance.IsPlaying && AudioPlayer.Instance.CanPlay)
-            {
-                PausePlayIcon.Kind = PackIconKind.PauseCircleOutline;
-
-                AudioPlayer.Instance.Play();
-            }
-            else if (!AudioPlayer.Instance.CanPlay)
-            {
-                OpenFile();
-            }
+            if (Instance.IsPlaying && Instance.CanPause)
+                Instance.Pause();
+            else if (!Instance.IsPlaying && Instance.CanPlay)
+                Instance.Play();
+            else if (!Instance.CanPlay) OpenFile();
         }
 
         private void Stop_Click(object sender, RoutedEventArgs e)
         {
-            StopAudioPlayer();
+            Instance.Stop();
         }
 
         private void Page_Drop(object sender, DragEventArgs e)
         {
-            StopAudioPlayer();
+            Instance.Stop();
 
-            if (e.Data.GetDataPresent(DataFormats.FileDrop))
-            {
-                // Note that you can have more than one file.
-                string[] files = (string[])e.Data.GetData(DataFormats.FileDrop);
+            if (!e.Data.GetDataPresent(DataFormats.FileDrop)) return;
+            var files = (string[]) e.Data.GetData(DataFormats.FileDrop);
 
-                App.File = files[0];
-            }
+            Instance.OpenFile(files?[0]);
         }
 
         private void Seekbar_ValueChanged(object sender, RoutedPropertyChangedEventArgs<double> e)
         {
-            //if (!AudioPlayer.Instance.CanPlay) return;
-
-            if (!playMusik) return;
-
-            AudioPlayer.Instance.ChannelPosition = Seekbar.Value;
-        }
-
-        private void StopAudioPlayer()
-        {
-            if (!AudioPlayer.Instance.CanStop) return;
-
-            PausePlayIcon.Kind = PackIconKind.PlayCircleOutline;
-
-            AudioPlayer.Instance.Stop();
-
-            FileName.Text = "RH Radio";
-            FileName.ToolTip = FileName.Text;
-            Seekbar.Minimum = 0;
-            Seekbar.Maximum = 0;
-            Seekbar.Value = 0;
-
-            length.Text = "00:00";
-            currentTime.Text = "00:00";
-
-            Title.Text = "";
-            Artists.Text = "";
-            Album.Text = "";
-            Genre.Text = "";
-            Track.Text = "";
-            Year.Text = "";
-            Bitrate.Text = "";
-            Copyright.Text = "";
-
-            Cover.Source = new BitmapImage(new Uri("/Radio;component/Assets/music-note.png", UriKind.Relative));
-
-            _toPinItem = false;
-            Pin.IsChecked = false;
-            _toPinItem = true;
-
-            StopButton.IsEnabled = false;
+            Instance.ChannelPosition = Seekbar.Value;
         }
 
         private void Repeat_Checked(object sender, RoutedEventArgs e)
@@ -349,151 +256,26 @@ namespace Radio.Wpf.Pages
             RepeatIcon.Foreground = Brushes.White;
         }
 
-        private void Button_Click(object sender, RoutedEventArgs e)
+        private void OpenPath_Click(object sender, RoutedEventArgs e)
         {
-            if (File.Exists(App.File))
-            {
-                Process.Start(Directory.GetParent(App.File).ToString());
-            }
-            else if (!string.IsNullOrEmpty(App.File))
-            {
-                Process.Start(App.File);
-            }
+            if (File.Exists(Instance.Path))
+                Process.Start(Directory.GetParent(Instance.Path).ToString());
+            else if (!string.IsNullOrEmpty(Instance.Path)) Process.Start(Instance.Path);
         }
 
-        private void Chip_MouseEnter(object sender, MouseEventArgs e)
-        {
-            Chip chip = (Chip)sender;
-            Image icon = (Image)chip.Icon;
+        #endregion Player Engine
 
-            icon.Stretch = Stretch.Uniform;
-            icon.Source = new BitmapImage(new Uri("/Radio;component/Assets/Play.png", UriKind.Relative));
-        }
+        #region Pins
 
-        private void Chip_MouseLeave(object sender, MouseEventArgs e)
-        {
-            Chip chip = (Chip)sender;
-            TextBlock title = (TextBlock)chip.Content;
-            Image icon = (Image)chip.Icon;
-
-            SetCover(icon, title);
-        }
-
-        private void Chip_Click(object sender, RoutedEventArgs e)
-        {
-            Chip chip = (Chip)sender;
-            TextBlock title = (TextBlock)chip.Content;
-
-            foreach (PinItem item in (List<PinItem>)Pins.ItemsSource)
-            {
-                if (item.Title == title.Text)
-                {
-                    StopAudioPlayer();
-                    App.File = item.Path;
-                }
-            }
-        }
-
-        private void Chip_Loaded(object sender, RoutedEventArgs e)
-        {
-            Chip chip = (Chip)sender;
-            TextBlock title = (TextBlock)chip.Content;
-            Image icon = (Image)chip.Icon;
-
-            SetCover(icon, title);
-        }
-
-        private void SetCover(Image icon, TextBlock title)
-        {
-            foreach (PinItem item in (List<PinItem>)Pins.ItemsSource)
-            {
-                if (item.Title == title.Text)
-                {
-                    var Path = item.Path;
-
-                    if (!File.Exists(Path)) break;
-
-                    var FileTag = TagLib.File.Create(Path);
-
-                    if (FileTag == null) break;
-
-                    TagLib.Tag tag = FileTag.Tag;
-
-                    if (tag.Pictures.Length > 0)
-                    {
-                        using (MemoryStream albumArtworkMemStream = new MemoryStream(tag.Pictures[0].Data.Data))
-                        {
-                            try
-                            {
-                                BitmapImage albumImage = new BitmapImage();
-                                albumImage.BeginInit();
-                                albumImage.CacheOption = BitmapCacheOption.OnLoad;
-                                albumImage.StreamSource = albumArtworkMemStream;
-                                albumImage.EndInit();
-                                icon.Source = albumImage;
-
-                                icon.Stretch = Stretch.Uniform;
-
-                                return;
-                            }
-                            catch (NotSupportedException)
-                            {
-                                icon.Stretch = Stretch.None;
-                                icon.Source = new BitmapImage(new Uri("/Radio;component/Assets/music-note.png", UriKind.Relative));
-                            }
-                            albumArtworkMemStream.Close();
-                        }
-                    }
-                }
-            }
-
-            icon.Stretch = Stretch.None;
-            icon.Source = new BitmapImage(new Uri("/Radio;component/Assets/music-note.png", UriKind.Relative));
-        }
-
-        private void Chip_DeleteClick(object sender, RoutedEventArgs e)
-        {
-            Chip chip = (Chip)sender;
-            TextBlock title = (TextBlock)chip.Content;
-
-            if (title.Text == FileName.Text)
-            {
-                Pin.IsChecked = false;
-            }
-            else
-            {
-                List<PinItem> items = (List<PinItem>)Pins.ItemsSource;
-
-                for (int i = items.Count - 1; i >= 0; i--)
-                {
-                    if (items[i].Title == title.Text)
-                    {
-                        items.RemoveAt(i);
-                    }
-                }
-
-                var settings = new JsonSerializerSettings();
-                settings.Converters.Add(new TupleConverter());
-
-                foreach (PinItem item in items)
-                {
-                    item.Title = item.Title.Replace("'", "&apos;");
-                    item.Path = item.Path.Replace("'", "&apos;");
-                }
-
-                SettingsHelper.ChangeValue("pinned", JsonConvert.SerializeObject(items, settings).Replace("\"", "'"));
-            }
-        }
-
-        public static bool _toPinItem = true;
+        private bool canPin = true;
 
         private void Pin_Checked(object sender, RoutedEventArgs e)
         {
-            if (string.IsNullOrEmpty(App.File))
+            if (string.IsNullOrEmpty(Instance.Path) || Instance.PathType == null)
             {
-                _toPinItem = false;
+                canPin = false;
                 Pin.IsChecked = false;
-                _toPinItem = true;
+                canPin = true;
                 return;
             }
 
@@ -502,16 +284,16 @@ namespace Radio.Wpf.Pages
 
             PinIcon.Foreground = new SolidColorBrush(hue.Color);
 
-            if (!_toPinItem) return;
+            if (!canPin) return;
 
-            var items = (List<PinItem>)Pins.ItemsSource;
+            var items = (List<PinItem>) PinnedItems.ItemsSource;
 
-            items.Add(new PinItem() { Title = FileName.Text, Path = App.File });
+            items.Add(new PinItem {Title = Title.Text, Path = Instance.Path, PathType = Instance.PathType});
 
             var settings = new JsonSerializerSettings();
             settings.Converters.Add(new TupleConverter());
 
-            foreach (PinItem item in items)
+            foreach (var item in items)
             {
                 item.Title = item.Title.Replace("'", "&apos;");
                 item.Path = item.Path.Replace("'", "&apos;");
@@ -526,22 +308,18 @@ namespace Radio.Wpf.Pages
         {
             PinIcon.Foreground = Brushes.White;
 
-            if (!_toPinItem) return;
+            if (!canPin) return;
 
-            var items = (List<PinItem>)Pins.ItemsSource;
+            var items = (List<PinItem>) PinnedItems.ItemsSource;
 
-            for (int i = items.Count - 1; i >= 0; i--)
-            {
-                if (items[i].Title == FileName.Text)
-                {
+            for (var i = items.Count - 1; i >= 0; i--)
+                if (items[i].Title == Title.Text)
                     items.RemoveAt(i);
-                }
-            }
 
             var settings = new JsonSerializerSettings();
             settings.Converters.Add(new TupleConverter());
 
-            foreach (PinItem item in items)
+            foreach (var item in items)
             {
                 item.Title = item.Title.Replace("'", "&apos;");
                 item.Path = item.Path.Replace("'", "&apos;");
@@ -550,38 +328,172 @@ namespace Radio.Wpf.Pages
             SettingsHelper.ChangeValue("pinned", JsonConvert.SerializeObject(items, settings).Replace("\"", "'"));
         }
 
-        public void PinsCollectionChanged(Object sender, NotifyCollectionChangedEventArgs e)
+        private static void SetCover(Image icon, TextBlock title)
         {
-            var items = (List<PinItem>)Pins.ItemsSource;
+            foreach (var item in (List<PinItem>) PinnedItems.ItemsSource)
+                if (item.Title == title.Text)
+                {
+                    var path = item.Path;
 
-            if (items == null) return;
+                    if (item.PathType == FileResult.File)
+                    {
+                        var fileTag = TagLib.File.Create(path);
 
-            if (items.Count <= 0)
+                        if (fileTag == null) break;
+
+                        var tag = fileTag.Tag;
+
+                        if (tag.Pictures.Length > 0)
+                        {
+                            using (var albumArtworkMemStream = new MemoryStream(tag.Pictures[0].Data.Data))
+                            {
+                                try
+                                {
+                                    var albumImage = new BitmapImage();
+                                    albumImage.BeginInit();
+                                    albumImage.CacheOption = BitmapCacheOption.OnLoad;
+                                    albumImage.StreamSource = albumArtworkMemStream;
+                                    albumImage.EndInit();
+                                    icon.Source = albumImage;
+
+                                    icon.Stretch = Stretch.Uniform;
+
+                                    return;
+                                }
+                                catch (NotSupportedException)
+                                {
+                                    icon.Stretch = Stretch.None;
+                                    icon.Source = new BitmapImage(new Uri("/Radio;component/Assets/music-note.png",
+                                        UriKind.Relative));
+                                }
+
+                                albumArtworkMemStream.Close();
+                            }
+                        }
+                        else
+                        {
+                            icon.Stretch = Stretch.None;
+                            icon.Source = new BitmapImage(new Uri("/Radio;component/Assets/music-note.png",
+                                UriKind.Relative));
+                        }
+                    }
+                    else if (item.PathType == FileResult.Stream)
+                    {
+                        icon.Stretch = Stretch.None;
+
+                        var uri = new Uri("/Radio;component/Assets/cloud.png", UriKind.Relative);
+                        var source = new BitmapImage();
+
+                        source.BeginInit();
+                        source.UriSource = uri;
+                        source.DecodePixelHeight = 20;
+                        source.DecodePixelWidth = 20;
+                        source.EndInit();
+
+                        icon.Source = source;
+                    }
+                    else
+                    {
+                        icon.Stretch = Stretch.None;
+                        icon.Source =
+                            new BitmapImage(new Uri("/Radio;component/Assets/music-note.png", UriKind.Relative));
+                    }
+                }
+        }
+
+        private void Chip_Loaded(object sender, RoutedEventArgs e)
+        {
+            var chip = (Chip) sender;
+            var title = (TextBlock) chip.Content;
+            var icon = (Image) chip.Icon;
+
+            SetCover(icon, title);
+        }
+
+        private void Chip_MouseEnter(object sender, MouseEventArgs e)
+        {
+            var chip = (Chip) sender;
+            var icon = (Image) chip.Icon;
+
+            icon.Stretch = Stretch.Uniform;
+            icon.Source = new BitmapImage(new Uri("/Radio;component/Assets/Play.png", UriKind.Relative));
+        }
+
+        private void Chip_MouseLeave(object sender, MouseEventArgs e)
+        {
+            var chip = (Chip) sender;
+            var title = (TextBlock) chip.Content;
+            var icon = (Image) chip.Icon;
+
+            SetCover(icon, title);
+        }
+
+        private void Chip_Click(object sender, RoutedEventArgs e)
+        {
+            var chip = (Chip) sender;
+            var title = (TextBlock) chip.Content;
+
+            foreach (var item in (List<PinItem>) PinnedItems.ItemsSource)
+                if (item.Title == title.Text)
+                {
+                    Instance.Stop();
+                    Instance.OpenFile(item.Path);
+                }
+        }
+
+        private void Chip_DeleteClick(object sender, RoutedEventArgs e)
+        {
+            var chip = (Chip) sender;
+            var title = (TextBlock) chip.Content;
+
+            if (title.Text == Title.Text)
             {
-                NoPins.Visibility = Visibility.Visible;
+                Pin.IsChecked = false;
             }
             else
             {
-                NoPins.Visibility = Visibility.Hidden;
-            }
+                var items = (List<PinItem>) PinnedItems.ItemsSource;
 
-            _toPinItem = false;
+                for (var i = items.Count - 1; i >= 0; i--)
+                    if (items[i].Title == title.Text)
+                        items.RemoveAt(i);
+
+                var settings = new JsonSerializerSettings();
+                settings.Converters.Add(new TupleConverter());
+
+                foreach (var item in items)
+                {
+                    item.Title = item.Title.Replace("'", "&apos;");
+                    item.Path = item.Path.Replace("'", "&apos;");
+                }
+
+                SettingsHelper.ChangeValue("pinned", JsonConvert.SerializeObject(items, settings).Replace("\"", "'"));
+            }
+        }
+
+        public void PinnedItemsCollectionChanged(object sender, NotifyCollectionChangedEventArgs e)
+        {
+            var items = (List<PinItem>) PinnedItems.ItemsSource;
+
+            if (items == null) return;
+
+            NoPins.Visibility = items.Count <= 0 ? Visibility.Visible : Visibility.Hidden;
+
+            canPin = false;
 
             Pin.IsChecked = false;
 
-            foreach (PinItem item in (List<PinItem>)Pins.ItemsSource)
+            foreach (var item in (List<PinItem>) PinnedItems.ItemsSource)
             {
-                if (!File.Exists(item.Path))
-                {
+                if (item.PathType != FileResult.File && item.PathType != FileResult.Stream)
                     item.Visibility = Visibility.Collapsed;
-                }
 
-                if (item.Path == App.File)
-                {
-                    Pin.IsChecked = true;
-                }
+                if (item.Path == Instance.Path) Pin.IsChecked = true;
             }
-            _toPinItem = true;
+
+            canPin = true;
         }
+
+        #endregion Pins
     }
 }
