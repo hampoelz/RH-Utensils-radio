@@ -27,7 +27,7 @@
     </Einstellungen>
   </menu>
   <versionsHistoryFile>https://raw.githubusercontent.com/rh-utensils/radio/master/Radio.Wpf/VersionHistory.xml</versionsHistoryFile>
-  <loggedIn>True</loggedIn>
-  <firstRun>False</firstRun>
+  <loggedIn>False</loggedIn>
+  <firstRun>True</firstRun>
   <selectionIndex>1</selectionIndex>
 </config>
