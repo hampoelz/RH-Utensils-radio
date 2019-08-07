@@ -1,5 +1,5 @@
 #define ExtensionName           "Radio"
-#define ExtensionVersion        "0.0.1"
+#define ExtensionVersion        "0.0.2"
 #define ExtensionPublisher      "RH Utensils"
 #define ExtensionPublisherURL   "https://rh-utensils.hampoelz.net/"
 #define ExtensionSupportURL     "https://github.com/rh-utensils/radio/issues/"
@@ -43,6 +43,7 @@ Name: "fileaccessory"; Description: "Als Standartprogramm für unterstützte Datei
 
 [Dirs]
 Name: "{app}"
+Name: "{app}\Logs"
 Name: "{app}\{#ExtensionVersion}"
 Name: "{userpf}\RH Utensils\SetUserFTA" 
 
