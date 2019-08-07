@@ -1,6 +1,12 @@
 <?xml version="1.0" encoding="utf-8"?>
 
 <versionHistory>
+  <v0.0.2>
+    <updateChannel>developer</updateChannel>
+    <version>0.0.2</version>
+    <setup>True</setup>
+    <file>https://raw.githubusercontent.com/rh-utensils/radio/master/Setup Files/Output/Radio Setup.exe</file>
+  </v0.0.2>
   <v0.0.1>
     <updateChannel>developer</updateChannel>
     <version>0.0.1</version>
