@@ -7,27 +7,27 @@
   <fileAssociation>wav</fileAssociation>
   <fileAssociation>radio</fileAssociation>
   <menu>
-    <Startseite>
+    <musicPlayer>
       <site_Title>Musik Player</site_Title>
-      <site_Icon>MusicCircleOutline</site_Icon>
+      <site_Icon>DiscPlayer</site_Icon>
       <site_Path>{extensionsDirectory}\{extensionName}\{extensionVersion}\Radio.exe</site_Path>
       <site_StartArguments>"{fileAssociation}" -page Player</site_StartArguments>
-    </Startseite>
-    <Abstand>
+    </musicPlayer>
+    <space>
       <site_Title>null</site_Title>
       <site_Icon>null</site_Icon>
       <site_Path>null</site_Path>
       <site_StartArguments>null</site_StartArguments>
-    </Abstand>
-    <Einstellungen>
+    </space>
+    <settings>
       <site_Title>Einstellungen</site_Title>
       <site_Icon>SettingsOutline</site_Icon>
       <site_Path>{extensionsDirectory}\{extensionName}\{extensionVersion}\Radio.exe</site_Path>
       <site_StartArguments>-page Settings</site_StartArguments>
-    </Einstellungen>
+    </settings>
   </menu>
   <versionsHistoryFile>https://raw.githubusercontent.com/rh-utensils/radio/master/Radio.Wpf/VersionHistory.xml</versionsHistoryFile>
   <loggedIn>False</loggedIn>
-  <firstRun>True</firstRun>
+  <firstRun>False</firstRun>
   <selectionIndex>1</selectionIndex>
 </config>
