@@ -135,7 +135,8 @@
                                     <Slider x:Name="Seekbar" IsMoveToPointEnabled="True" VerticalAlignment="Center"
                                             Margin="60,0" Foreground="White" Orientation="Horizontal" Minimum="0"
                                             Maximum="0" Value="0" IsSelectionRangeEnabled="True" TickFrequency="60"
-                                            TickPlacement="BottomRight" ValueChanged="Seekbar_ValueChanged" materialDesign:ThemeAssist.Theme="Dark"/>
+                                            TickPlacement="BottomRight" ValueChanged="Seekbar_ValueChanged"
+                                            materialDesign:ThemeAssist.Theme="Dark" />
                                     <Border VerticalAlignment="Center" HorizontalAlignment="Right" Margin="5,0,15,5"
                                             Width="35">
                                         <TextBlock x:Name="Length" Foreground="White" HorizontalAlignment="Left"
