@@ -6,6 +6,8 @@
       xmlns:materialDesign="http://materialdesigninxaml.net/winfx/xaml/themes"
       xmlns:svl="clr-namespace:WPFSoundVisualizationLib;assembly=WPFSoundVisualizationLib"
       xmlns:pages="clr-namespace:Radio.Wpf.Pages"
+      xmlns:metro="http://metro.mahapps.com/winfx/xaml/controls"
+      xmlns:utilities="clr-namespace:Radio.Wpf.Utilities"
       mc:Ignorable="d"
       TextElement.Foreground="{DynamicResource MaterialDesignBody}"
       TextElement.FontWeight="Regular"
@@ -141,6 +143,20 @@
                                             Width="35">
                                         <TextBlock x:Name="Length" Foreground="White" HorizontalAlignment="Left"
                                                    VerticalAlignment="Center" Text="00:00" />
+                                    </Border>
+                                </Grid>
+                                <Grid HorizontalAlignment="Right" Width="50" Grid.Column="1" Margin="8" MouseWheel="Volume_OnMouseWheel" MouseLeave="Volume_OnMouseLeave">
+                                    
+                                    <Border BorderBrush="White" BorderThickness="1" CornerRadius="2">
+                                        <Grid>
+                                            <RepeatButton Style="{DynamicResource MaterialDesignToolButton}" Foreground="White" Width="70" VerticalAlignment="Top" HorizontalAlignment="Center" Height="30" Click="VolumePlus_Click">
+                                                <materialDesign:PackIcon Kind="VolumePlus" Height="20" Width="Auto" HorizontalAlignment="Center" VerticalAlignment="Center"/>
+                                            </RepeatButton>
+                                            <TextBlock x:Name="_Volume" Text="100%" VerticalAlignment="Center" TextAlignment="Center" FontWeight="Bold" FontSize="14" Foreground="White"/>
+                                            <RepeatButton Style="{DynamicResource MaterialDesignToolButton}" Foreground="White" Width="70" VerticalAlignment="Bottom" HorizontalAlignment="Center" Height="30" Click="VolumeMinus_Click">
+                                                <materialDesign:PackIcon Kind="VolumeMinus" Height="20" Width="Auto" HorizontalAlignment="Center" VerticalAlignment="Center"/>
+                                            </RepeatButton>
+                                        </Grid>
                                     </Border>
                                 </Grid>
                             </Grid>

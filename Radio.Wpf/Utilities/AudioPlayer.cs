@@ -2,6 +2,7 @@
 using System.ComponentModel;
 using System.Windows.Threading;
 using NAudio.Wave;
+using Radio.Wpf.Pages;
 using Sample_NAudio;
 using TagLib;
 using WPFSoundVisualizationLib;
@@ -36,6 +37,8 @@ namespace Radio.Wpf.Utilities
         private WaveChannel32 inputStream;
         private bool isPlaying;
         private SampleAggregator sampleAggregator;
+
+        private float volume = 100;
 
         private WaveOutEvent waveOutDevice;
 
@@ -94,6 +97,19 @@ namespace Radio.Wpf.Utilities
                 if (ActiveStream != null && Math.Abs(oldValue - ActiveStream.Position) > 1)
                     NotifyPropertyChanged("ChannelPosition");
                 inChannelSet = false;
+            }
+        }
+
+        public float Volume
+        {
+            get => volume;
+            set
+            {
+                volume = value;
+
+                Player.Volume.Text = value * 100 + "%";
+
+                if (inputStream != null) inputStream.Volume = value;
             }
         }
 
@@ -252,6 +268,8 @@ namespace Radio.Wpf.Utilities
                 ChannelLength = 0;
                 ChannelLength = inputStream.TotalTime.TotalSeconds;
 
+                inputStream.Volume = Volume;
+
                 NotifyPropertyChanged("Content");
 
                 switch (PathType)
@@ -269,8 +287,11 @@ namespace Radio.Wpf.Utilities
 
                 Instance.Play();
             }
-            catch
+            catch (Exception ex)
             {
+                LogHelper.WriteLog("Can't play audio from \"" + path + "\".");
+                LogHelper.WriteLog(ex);
+
                 ActiveStream = null;
                 CanPlay = false;
                 Path = null;

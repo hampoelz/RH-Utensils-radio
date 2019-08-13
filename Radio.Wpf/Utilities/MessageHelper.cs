@@ -84,6 +84,11 @@ namespace Radio.Wpf.Utilities
                     foreach (var prop in typeof(Settings).GetProperties())
                         if (prop.Name.Equals(parameter, StringComparison.InvariantCultureIgnoreCase))
                             prop.SetValue(null, newValue);
+
+                    if (parameter == "Volume" && float.TryParse(newValue , out var volume))
+                    {
+                        AudioPlayer.Instance.Volume = volume;
+                    }
                 }
                 else if (msg.StartsWith("open File"))
                 {

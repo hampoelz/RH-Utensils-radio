@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Collections.Specialized;
 using System.ComponentModel;
 using System.Diagnostics;
+using System.Globalization;
 using System.IO;
 using System.Linq;
 using System.Net;
@@ -32,7 +33,7 @@ namespace Radio.Wpf.Pages
     public partial class Player
     {
         public static ListBox PinnedItems;
-
+        public static TextBlock Volume;
         public Player()
         {
             InitializeComponent();
@@ -52,6 +53,8 @@ namespace Radio.Wpf.Pages
 
             PinnedItems = _PinnedItems;
             PinnedItems.ItemsSource = new List<PinItem>();
+
+            Volume = _Volume;
 
             ((INotifyCollectionChanged) PinnedItems.Items).CollectionChanged += PinnedItemsCollectionChanged;
 
@@ -495,5 +498,54 @@ namespace Radio.Wpf.Pages
         }
 
         #endregion Pins
+
+        #region Volume
+
+        private void VolumePlus_Click(object sender, RoutedEventArgs e)
+        {
+            var vol = Convert.ToInt32(Volume.Text.Remove(Volume.Text.Length - 1)) + 1;
+
+            if (vol > 200) return;
+
+            Instance.Volume = (float)vol / 100;
+        }
+
+        private void VolumeMinus_Click(object sender, RoutedEventArgs e)
+        {
+            var vol = Convert.ToInt32(Volume.Text.Remove(Volume.Text.Length - 1)) - 1;
+
+            if (vol < 0) return;
+
+            Instance.Volume = (float)vol / 100;
+        }
+
+        private void Volume_OnMouseWheel(object sender, MouseWheelEventArgs e)
+        {
+            var vol = Convert.ToInt32(Volume.Text.Remove(Volume.Text.Length - 1));
+
+            if (e.Delta < 0)
+            {
+                --vol;
+
+                if (vol < 0) return;
+            }
+            else if (e.Delta > 0)
+            {
+                ++vol;
+
+                if (vol > 200) return;
+            }
+
+            Instance.Volume = (float)vol / 100;
+        }
+
+        private void Volume_OnMouseLeave(object sender, MouseEventArgs e)
+        {
+            var vol = (float) Convert.ToInt32(Volume.Text.Remove(Volume.Text.Length - 1)) / 100;
+
+            SettingsHelper.ChangeValue("Volume", vol.ToString("0.00"));
+        }
+
+        #endregion
     }
 }
