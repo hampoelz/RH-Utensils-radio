@@ -45,18 +45,6 @@
                                            Margin="10,10,0,0" FontSize="20" />
                                 <materialDesign:Card Width="800" Margin="0,45,0,30">
                                     <ItemsControl>
-                                        <Grid Margin="20" IsEnabled="False">
-                                            <materialDesign:PackIcon Kind="Sync" Width="30" Height="Auto"
-                                                                     VerticalAlignment="Center"
-                                                                     HorizontalAlignment="Left" Margin="15,0,0,0" />
-                                            <TextBlock FontSize="20" Text="Coming Soon" HorizontalAlignment="Left"
-                                                       VerticalAlignment="Top" Margin="60,0,0,0" />
-                                            <TextBlock FontSize="13" Text=" - - - - -" HorizontalAlignment="Left"
-                                                       VerticalAlignment="Bottom" Margin="60,27,0,0" />
-                                            <Grid x:Name="TestControl" HorizontalAlignment="Right"
-                                                  VerticalAlignment="Center" Margin="0,0,20,0" />
-                                        </Grid>
-                                        <Separator />
                                         <Grid Margin="15,15,20,15">
                                             <TextBlock FontSize="20" Text="Datenschutz" HorizontalAlignment="Left"
                                                        VerticalAlignment="Top" Margin="10,0,0,0" />
@@ -84,41 +72,30 @@
                                 <materialDesign:TransitionEffect Kind="SlideInFromRight" />
                             </materialDesign:TransitioningContent.OpeningEffects>
                             <Grid>
-                                <TextBlock Text="Design" VerticalAlignment="Top" Height="25" Width="800"
+                                <TextBlock Text="Aussehen" VerticalAlignment="Top" Height="25" Width="800"
                                            Margin="10,10,0,0" FontSize="20" />
                                 <materialDesign:Card Width="800" Height="Auto" Margin="0,45,0,30">
                                     <ItemsControl>
                                         <Grid Margin="15,15,20,15">
-                                            <TextBlock FontSize="20" Text="Theme" HorizontalAlignment="Left"
+                                            <TextBlock FontSize="20" Text="Programm-Design" HorizontalAlignment="Left"
                                                        VerticalAlignment="Center" Margin="10,0,0,0" />
                                             <TextBlock FontSize="20" Text="Hell" HorizontalAlignment="Right"
-                                                       VerticalAlignment="Center" Margin="0,0,20,0" />
-                                            <Grid x:Name="ThemeControl" HorizontalAlignment="Right"
-                                                  VerticalAlignment="Center" Margin="0,0,70,0" />
+                                                       VerticalAlignment="Center" Margin="0,0,44,0" />
+                                            <ToggleButton x:Name="_theme" HorizontalAlignment="Right"
+                                                  VerticalAlignment="Center" Margin="0,0,100,0" Checked="Theme_Checked" Unchecked="Theme_Unchecked"/>
                                             <TextBlock FontSize="20" Text="Dunkel" HorizontalAlignment="Right"
-                                                       VerticalAlignment="Center" Margin="0,0,125,0" />
+                                                       VerticalAlignment="Center" Margin="0,0,160,0" />
                                         </Grid>
-                                    </ItemsControl>
-                                </materialDesign:Card>
-                            </Grid>
-                        </materialDesign:TransitioningContent>
-
-                        <materialDesign:TransitioningContent
-                            OpeningEffectsOffset="{materialDesign:IndexedItemOffsetMultiplier 0:0:0.1}">
-                            <materialDesign:TransitioningContent.OpeningEffects>
-                                <materialDesign:TransitionEffect Kind="FadeIn" />
-                                <materialDesign:TransitionEffect Kind="SlideInFromRight" />
-                            </materialDesign:TransitioningContent.OpeningEffects>
-                            <Grid>
-                                <TextBlock Text="Andere Sachen" VerticalAlignment="Top" Height="25" Width="800"
-                                           Margin="10,10,0,0" FontSize="20" />
-                                <materialDesign:Card Width="800" Height="300" Margin="0,45,0,30">
-                                    <ItemsControl>
+                                        <Separator />
                                         <Grid Margin="15,15,20,15">
-                                            <TextBlock FontSize="20"
-                                                       Text="Hier kommen weitere Einstellungs-Optionen ..."
-                                                       HorizontalAlignment="Center" VerticalAlignment="Center"
-                                                       Margin="10,0,0,0" />
+                                            <TextBlock FontSize="20" Text="Position der Lautstärkeregelung" HorizontalAlignment="Left"
+                                                       VerticalAlignment="Center" Margin="10,0,0,0" />
+                                            <TextBlock FontSize="20" Text="Rechts" HorizontalAlignment="Right"
+                                                       VerticalAlignment="Center" Margin="0,0,20,0" />
+                                            <ToggleButton x:Name="_volumePosition" HorizontalAlignment="Right"
+                                                  VerticalAlignment="Center" Margin="0,0,100,0" IsChecked="True" Checked="VolumePosition_Checked" Unchecked="VolumePosition_Unchecked"/>
+                                            <TextBlock FontSize="20" Text="Links" HorizontalAlignment="Right"
+                                                       VerticalAlignment="Center" Margin="0,0,160,0" />
                                         </Grid>
                                     </ItemsControl>
                                 </materialDesign:Card>

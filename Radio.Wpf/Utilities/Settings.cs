@@ -13,8 +13,7 @@ namespace Radio.Wpf.Utilities
     public static class Settings
     {
         private static string _theme = "dark";
-
-        private static string _test;
+        private static string _volumePosition = "right";
 
         private static string _pinned;
 
@@ -35,7 +34,7 @@ namespace Radio.Wpf.Utilities
 
                 try
                 {
-                    if (value == "light")
+                    if (string.Equals(value, "light"))
                     {
                         new PaletteHelper().SetLightDark(false);
 
@@ -46,7 +45,7 @@ namespace Radio.Wpf.Utilities
                             new BitmapImage(new Uri("/Radio;component/Assets/under-construction-dark.png",
                                 UriKind.Relative));
 
-                        Pages.Settings.ThemeProperty.IsChecked = true;
+                        Pages.Settings.Theme.IsChecked = true;
                     }
                     else
                     {
@@ -58,7 +57,7 @@ namespace Radio.Wpf.Utilities
                         UnderConstruction.Image.Source = new BitmapImage(
                             new Uri("/Radio;component/Assets/under-construction-light.png", UriKind.Relative));
 
-                        Pages.Settings.ThemeProperty.IsChecked = false;
+                        Pages.Settings.Theme.IsChecked = false;
                     }
                 }
                 catch (Exception ex)
@@ -67,17 +66,38 @@ namespace Radio.Wpf.Utilities
                 }
             }
         }
-
-        public static string Test
+        public static string VolumePosition
         {
-            get => _test;
+            get => _volumePosition;
             set
             {
-                if (_test == value) return;
+                value = value.ToLower();
 
-                if (!bool.TryParse(value, out var result)) return;
-                Pages.Settings.TestProperty.IsChecked = result;
-                _test = value;
+                if (_volumePosition == value || string.IsNullOrEmpty(value)) return;
+
+                var positions = new List<string> { "left", "right" };
+
+                if (!positions.Contains(value)) return;
+
+                _volumePosition = value;
+
+                try
+                {
+                    if (string.Equals(value, "right"))
+                    {
+                        Player.ChangeVolumePosition(Player.VolumePosition.Right);
+                        Pages.Settings.VolumePosition.IsChecked = true;
+                    }
+                    else
+                    {
+                        Player.ChangeVolumePosition(Player.VolumePosition.Left);
+                        Pages.Settings.VolumePosition.IsChecked = false;
+                    }
+                }
+                catch (Exception ex)
+                {
+                    LogHelper.WriteLog(ex);
+                }
             }
         }
 
@@ -107,11 +127,6 @@ namespace Radio.Wpf.Utilities
                 Player.PinnedItems.ItemsSource = null;
                 Player.PinnedItems.ItemsSource = items;
             }
-        }
-
-        public static bool HasProperty(this Type obj, string propertyName)
-        {
-            return obj.GetProperty(propertyName) != null;
         }
     }
 }

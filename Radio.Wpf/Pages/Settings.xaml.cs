@@ -13,43 +13,50 @@ namespace Radio.Wpf.Pages
 {
     public partial class Settings
     {
-        public static ToggleButton TestProperty = new ToggleButton();
-        public static ToggleButton ThemeProperty = new ToggleButton();
+        public static ToggleButton Theme;
+        public static ToggleButton VolumePosition;
+
+        private bool _loaded;
 
         public Settings()
         {
             InitializeComponent();
+
+            Theme = _theme;
+            VolumePosition = _volumePosition;
         }
 
         private void Page_Loaded(object sender, RoutedEventArgs e)
         {
-            TestControl.Children.Add(TestProperty);
-            TestProperty.Checked += TestProperty_Checked;
-            TestProperty.Unchecked += TestProperty_Unchecked;
-
-            ThemeControl.Children.Add(ThemeProperty);
-            ThemeProperty.Checked += ThemeProperty_Checked;
-            ThemeProperty.Unchecked += ThemeProperty_Unchecked;
+            _loaded = true;
         }
 
-        private static void ThemeProperty_Unchecked(object sender, RoutedEventArgs e)
+        private void Theme_Unchecked(object sender, RoutedEventArgs e)
         {
+            if (!_loaded) return;
+
             SettingsHelper.ChangeValue("theme", "dark");
         }
 
-        private static void ThemeProperty_Checked(object sender, RoutedEventArgs e)
+        private void Theme_Checked(object sender, RoutedEventArgs e)
         {
+            if (!_loaded) return;
+
             SettingsHelper.ChangeValue("theme", "light");
         }
 
-        private static void TestProperty_Unchecked(object sender, RoutedEventArgs e)
+        private void VolumePosition_Unchecked(object sender, RoutedEventArgs e)
         {
-            SettingsHelper.ChangeValue("test", false.ToString());
+            if (!_loaded) return;
+
+            SettingsHelper.ChangeValue("volumePosition", "left");
         }
 
-        private static void TestProperty_Checked(object sender, RoutedEventArgs e)
+        private void VolumePosition_Checked(object sender, RoutedEventArgs e)
         {
-            SettingsHelper.ChangeValue("test", true.ToString());
+            if (!_loaded) return;
+
+            SettingsHelper.ChangeValue("volumePosition", "right");
         }
 
         private async void ScrollViewer_ScrollChanged(object sender, ScrollChangedEventArgs e)

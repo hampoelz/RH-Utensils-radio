@@ -50,111 +50,125 @@
                     <Grid>
                         <Border Background="Black" Opacity="0.2" />
                         <Grid>
-                            <Grid>
+                            <Grid x:Name="_MainArea">
                                 <Grid.ColumnDefinitions>
                                     <ColumnDefinition Width="*" />
                                     <ColumnDefinition Width="Auto" />
                                 </Grid.ColumnDefinitions>
-                                <Grid VerticalAlignment="Top" Height="35" Margin="15,15" Grid.Column="0">
-                                    <Grid.ColumnDefinitions>
-                                        <ColumnDefinition Width="Auto" />
-                                        <ColumnDefinition Width="*" />
-                                        <ColumnDefinition Width="Auto" />
-                                    </Grid.ColumnDefinitions>
-                                    <StackPanel Width="Auto" HorizontalAlignment="Left" Orientation="Horizontal"
+                                <Grid x:Name="_NavigationArea" Grid.Column="0">
+                                    <Grid VerticalAlignment="Top" Height="35" Margin="15,15">
+                                        <Grid.ColumnDefinitions>
+                                            <ColumnDefinition Width="Auto" />
+                                            <ColumnDefinition Width="*" />
+                                            <ColumnDefinition Width="Auto" />
+                                        </Grid.ColumnDefinitions>
+                                        <StackPanel Width="Auto" HorizontalAlignment="Left" Orientation="Horizontal"
                                                 Grid.Column="0" Margin="0,0,10,0">
-                                        <Button Style="{DynamicResource MaterialDesignToolButton}" Width="Auto"
+                                            <Button Style="{DynamicResource MaterialDesignToolButton}" Width="Auto"
                                                 Height="Auto" VerticalAlignment="Center" IsEnabled="False">
-                                            <materialDesign:PackIcon Kind="SkipPreviousCircleOutline" Height="30"
+                                                <materialDesign:PackIcon Kind="SkipPreviousCircleOutline" Height="30"
                                                                      Width="Auto" VerticalAlignment="Center"
                                                                      HorizontalAlignment="Center" Foreground="White" />
-                                        </Button>
-                                        <Line Width="10" />
-                                        <Button Style="{DynamicResource MaterialDesignToolButton}"
+                                            </Button>
+                                            <Line Width="10" />
+                                            <Button Style="{DynamicResource MaterialDesignToolButton}"
                                                 Click="PausePlay_Click" Width="Auto" Height="Auto"
                                                 VerticalAlignment="Center">
-                                            <materialDesign:PackIcon x:Name="PausePlayIcon" Kind="PlayCircleOutline"
+                                                <materialDesign:PackIcon x:Name="PausePlayIcon" Kind="PlayCircleOutline"
                                                                      Height="30" Width="Auto"
                                                                      VerticalAlignment="Center"
                                                                      HorizontalAlignment="Center" Foreground="White" />
-                                        </Button>
-                                        <Button x:Name="StopButton" Style="{DynamicResource MaterialDesignToolButton}"
+                                            </Button>
+                                            <Button x:Name="StopButton" Style="{DynamicResource MaterialDesignToolButton}"
                                                 Click="Stop_Click" Width="Auto" Height="Auto"
                                                 VerticalAlignment="Center" IsEnabled="False">
-                                            <materialDesign:PackIcon Kind="StopCircleOutline" Height="30" Width="Auto"
+                                                <materialDesign:PackIcon Kind="StopCircleOutline" Height="30" Width="Auto"
                                                                      VerticalAlignment="Center"
                                                                      HorizontalAlignment="Center" Foreground="White" />
-                                        </Button>
-                                        <Line Width="10" />
-                                        <Button Style="{DynamicResource MaterialDesignToolButton}" Width="Auto"
+                                            </Button>
+                                            <Line Width="10" />
+                                            <Button Style="{DynamicResource MaterialDesignToolButton}" Width="Auto"
                                                 Height="Auto" VerticalAlignment="Center" IsEnabled="False">
-                                            <materialDesign:PackIcon Kind="SkipNextCircleOutline" Height="30"
+                                                <materialDesign:PackIcon Kind="SkipNextCircleOutline" Height="30"
                                                                      Width="Auto" VerticalAlignment="Center"
                                                                      HorizontalAlignment="Center" Foreground="White" />
-                                        </Button>
-                                    </StackPanel>
-                                    <TextBlock x:Name="Title" Grid.Column="1" Foreground="White" TextAlignment="Center"
+                                            </Button>
+                                        </StackPanel>
+                                        <TextBlock x:Name="Title" Grid.Column="1" Foreground="White" TextAlignment="Center"
                                                VerticalAlignment="Center" HorizontalAlignment="Stretch"
                                                TextTrimming="CharacterEllipsis" FontSize="30" FontWeight="Black"
                                                Text="RH Radio"
                                                ToolTip="{Binding Text, RelativeSource={RelativeSource Self}}" />
-                                    <StackPanel Width="Auto" HorizontalAlignment="Right" Orientation="Horizontal"
+                                        <StackPanel Width="Auto" HorizontalAlignment="Right" Orientation="Horizontal"
                                                 Grid.Column="3" Margin="10,0,0,0">
-                                        <Button Style="{DynamicResource MaterialDesignToolButton}"
+                                            <Button Style="{DynamicResource MaterialDesignToolButton}"
                                                 ToolTip="Ordner im Datei-Explorer öffnen" Click="OpenPath_Click">
-                                            <materialDesign:PackIcon Kind="FolderOutline" Height="25" Width="Auto"
+                                                <materialDesign:PackIcon Kind="FolderOutline" Height="25" Width="Auto"
                                                                      VerticalAlignment="Center"
                                                                      HorizontalAlignment="Center" Foreground="White" />
-                                        </Button>
-                                        <Line Width="10" />
-                                        <ToggleButton x:Name="Pin" Height="Auto"
+                                            </Button>
+                                            <Line Width="10" />
+                                            <ToggleButton x:Name="Pin" Height="Auto"
                                                       Width="{Binding ActualHeight, RelativeSource={RelativeSource Self}}"
                                                       Style="{StaticResource MaterialDesignFlatToggleButton}"
                                                       Checked="Pin_Checked" Unchecked="Pin_Unchecked"
                                                       ToolTip="Anpinnen">
-                                            <materialDesign:PackIcon x:Name="PinIcon" Kind="PinOutline" Height="25"
+                                                <materialDesign:PackIcon x:Name="PinIcon" Kind="PinOutline" Height="25"
                                                                      Width="Auto" VerticalAlignment="Center"
                                                                      HorizontalAlignment="Center" Foreground="White" />
-                                        </ToggleButton>
-                                        <Line Width="10" />
-                                        <ToggleButton x:Name="Repeat" Height="Auto"
+                                            </ToggleButton>
+                                            <Line Width="10" />
+                                            <ToggleButton x:Name="Repeat" Height="Auto"
                                                       Width="{Binding ActualHeight, RelativeSource={RelativeSource Self}}"
                                                       Style="{StaticResource MaterialDesignFlatToggleButton}"
                                                       Checked="Repeat_Checked" Unchecked="Repeat_Unchecked"
                                                       ToolTip="Wiederholen">
-                                            <materialDesign:PackIcon x:Name="RepeatIcon" Kind="Repeat" Height="25"
+                                                <materialDesign:PackIcon x:Name="RepeatIcon" Kind="Repeat" Height="25"
                                                                      Width="Auto" VerticalAlignment="Center"
                                                                      HorizontalAlignment="Center" Foreground="White" />
-                                        </ToggleButton>
-                                    </StackPanel>
-                                </Grid>
-                                <Grid VerticalAlignment="Bottom" Margin="0,0,0,5" Height="35" Grid.Column="0">
-                                    <Border VerticalAlignment="Center" HorizontalAlignment="Left" Margin="15,0,5,5"
+                                            </ToggleButton>
+                                        </StackPanel>
+                                    </Grid>
+                                    <Grid VerticalAlignment="Bottom" Margin="0,0,0,5" Height="35">
+                                        <Border VerticalAlignment="Center" HorizontalAlignment="Left" Margin="15,0,5,5"
                                             Width="35">
-                                        <TextBlock x:Name="CurrentTime" Foreground="White" HorizontalAlignment="Right"
+                                            <TextBlock x:Name="CurrentTime" Foreground="White" HorizontalAlignment="Right"
                                                    VerticalAlignment="Center" Text="00:00" />
-                                    </Border>
-                                    <Slider x:Name="Seekbar" IsMoveToPointEnabled="True" VerticalAlignment="Center"
+                                        </Border>
+                                        <Slider x:Name="Seekbar" IsMoveToPointEnabled="True" VerticalAlignment="Center"
                                             Margin="60,0" Foreground="White" Orientation="Horizontal" Minimum="0"
                                             Maximum="0" Value="0" IsSelectionRangeEnabled="True" TickFrequency="60"
                                             TickPlacement="BottomRight" ValueChanged="Seekbar_ValueChanged"
                                             materialDesign:ThemeAssist.Theme="Dark" />
-                                    <Border VerticalAlignment="Center" HorizontalAlignment="Right" Margin="5,0,15,5"
+                                        <Border VerticalAlignment="Center" HorizontalAlignment="Right" Margin="5,0,15,5"
                                             Width="35">
-                                        <TextBlock x:Name="Length" Foreground="White" HorizontalAlignment="Left"
+                                            <TextBlock x:Name="Length" Foreground="White" HorizontalAlignment="Left"
                                                    VerticalAlignment="Center" Text="00:00" />
-                                    </Border>
+                                        </Border>
+                                    </Grid>
                                 </Grid>
-                                <Grid HorizontalAlignment="Right" Width="50" Grid.Column="1" Margin="8" MouseWheel="Volume_OnMouseWheel" MouseLeave="Volume_OnMouseLeave">
-                                    
+                                <Grid x:Name="_VolumeArea" HorizontalAlignment="Right" Width="50" Grid.Column="1" Margin="8" MouseWheel="Volume_OnMouseWheel" MouseLeave="Volume_OnMouseLeave">
+
                                     <Border BorderBrush="White" BorderThickness="1" CornerRadius="2">
                                         <Grid>
-                                            <RepeatButton Style="{DynamicResource MaterialDesignToolButton}" Foreground="White" Width="70" VerticalAlignment="Top" HorizontalAlignment="Center" Height="30" Click="VolumePlus_Click">
-                                                <materialDesign:PackIcon Kind="VolumePlus" Height="20" Width="Auto" HorizontalAlignment="Center" VerticalAlignment="Center"/>
+                                            <RepeatButton Style="{DynamicResource MaterialDesignToolButton}"
+                                                          Foreground="White" Width="70" VerticalAlignment="Top"
+                                                          HorizontalAlignment="Center" Height="35"
+                                                          Click="VolumePlus_Click">
+                                                <materialDesign:PackIcon Kind="VolumePlus" Height="20" Width="Auto"
+                                                                         HorizontalAlignment="Center"
+                                                                         VerticalAlignment="Center" />
                                             </RepeatButton>
-                                            <TextBlock x:Name="_Volume" Text="100%" VerticalAlignment="Center" TextAlignment="Center" FontWeight="Bold" FontSize="14" Foreground="White"/>
-                                            <RepeatButton Style="{DynamicResource MaterialDesignToolButton}" Foreground="White" Width="70" VerticalAlignment="Bottom" HorizontalAlignment="Center" Height="30" Click="VolumeMinus_Click">
-                                                <materialDesign:PackIcon Kind="VolumeMinus" Height="20" Width="Auto" HorizontalAlignment="Center" VerticalAlignment="Center"/>
+                                            <TextBlock x:Name="_Volume" Text="100%" VerticalAlignment="Center"
+                                                       TextAlignment="Center" FontWeight="Bold" FontSize="14"
+                                                       Foreground="White" Margin="0,34,0,30" />
+                                            <RepeatButton Style="{DynamicResource MaterialDesignToolButton}"
+                                                          Foreground="White" Width="70" VerticalAlignment="Bottom"
+                                                          HorizontalAlignment="Center" Height="35"
+                                                          Click="VolumeMinus_Click">
+                                                <materialDesign:PackIcon Kind="VolumeMinus" Height="20" Width="Auto"
+                                                                         HorizontalAlignment="Center"
+                                                                         VerticalAlignment="Center" />
                                             </RepeatButton>
                                         </Grid>
                                     </Border>

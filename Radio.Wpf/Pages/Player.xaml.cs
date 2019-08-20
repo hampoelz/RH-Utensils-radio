@@ -3,7 +3,6 @@ using System.Collections.Generic;
 using System.Collections.Specialized;
 using System.ComponentModel;
 using System.Diagnostics;
-using System.Globalization;
 using System.IO;
 using System.Linq;
 using System.Net;
@@ -34,6 +33,11 @@ namespace Radio.Wpf.Pages
     {
         public static ListBox PinnedItems;
         public static TextBlock Volume;
+
+        public static Grid MainArea;
+        public static Grid NavigationArea;
+        public static Grid VolumeArea;
+
         public Player()
         {
             InitializeComponent();
@@ -53,6 +57,10 @@ namespace Radio.Wpf.Pages
 
             PinnedItems = _PinnedItems;
             PinnedItems.ItemsSource = new List<PinItem>();
+
+            MainArea = _MainArea;
+            NavigationArea = _NavigationArea;
+            VolumeArea = _VolumeArea;
 
             Volume = _Volume;
 
@@ -501,13 +509,34 @@ namespace Radio.Wpf.Pages
 
         #region Volume
 
+        public enum VolumePosition { Left, Right };
+
+        public static void ChangeVolumePosition(VolumePosition position)
+        {
+            switch (position)
+            {
+                case VolumePosition.Left:
+                    MainArea.ColumnDefinitions[0].Width = GridLength.Auto;
+                    MainArea.ColumnDefinitions[1].Width = new GridLength(1, GridUnitType.Star);
+                    Grid.SetColumn(VolumeArea, 0);
+                    Grid.SetColumn(NavigationArea, 1);
+                    break;
+                case VolumePosition.Right:
+                    MainArea.ColumnDefinitions[0].Width = new GridLength(1, GridUnitType.Star);
+                    MainArea.ColumnDefinitions[1].Width = GridLength.Auto;
+                    Grid.SetColumn(NavigationArea, 0);
+                    Grid.SetColumn(VolumeArea, 1);
+                    break;
+            }
+        }
+
         private void VolumePlus_Click(object sender, RoutedEventArgs e)
         {
             var vol = Convert.ToInt32(Volume.Text.Remove(Volume.Text.Length - 1)) + 1;
 
             if (vol > 200) return;
 
-            Instance.Volume = (float)vol / 100;
+            Instance.Volume = (float) vol / 100;
         }
 
         private void VolumeMinus_Click(object sender, RoutedEventArgs e)
@@ -516,7 +545,7 @@ namespace Radio.Wpf.Pages
 
             if (vol < 0) return;
 
-            Instance.Volume = (float)vol / 100;
+            Instance.Volume = (float) vol / 100;
         }
 
         private void Volume_OnMouseWheel(object sender, MouseWheelEventArgs e)
@@ -536,14 +565,14 @@ namespace Radio.Wpf.Pages
                 if (vol > 200) return;
             }
 
-            Instance.Volume = (float)vol / 100;
+            Instance.Volume = (float) vol / 100;
         }
 
         private void Volume_OnMouseLeave(object sender, MouseEventArgs e)
         {
             var vol = (float) Convert.ToInt32(Volume.Text.Remove(Volume.Text.Length - 1)) / 100;
 
-            SettingsHelper.ChangeValue("Volume", vol.ToString("0.00"));
+            SettingsHelper.ChangeValue("volume on '" + Environment.MachineName + "'", vol.ToString("0.00"));
         }
 
         #endregion
